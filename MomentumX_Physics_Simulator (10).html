@@ -1,631 +1,1286 @@
 <!DOCTYPE html>
 <html lang="sq">
+
 <head>
-<meta charset="UTF-8">
-<title>MomentumX Physics Simulator</title>
-<style>
-*{margin:0;padding:0;box-sizing:border-box;}
-:root{
-  --bg:#020c1a;--panel:rgba(3,14,32,0.97);--border:rgba(0,220,255,0.15);
-  --cyan:#00dcff;--pink:#ff2080;--green:#00ff99;--orange:#ff7700;--yellow:#ffdd00;
-  --txt:#cce8ff;--txt2:#4a85a8;--txt3:#1a4060;
-  --s-cyan:0 0 18px rgba(0,220,255,0.4);
-}
-body{
-  background:var(--bg);color:var(--txt);
-  font-family:'Segoe UI',Arial,sans-serif;
-  height:100vh;overflow:hidden;
-  display:flex;flex-direction:column;
-  background-image:
-    linear-gradient(rgba(0,220,255,0.022) 1px,transparent 1px),
-    linear-gradient(90deg,rgba(0,220,255,0.022) 1px,transparent 1px);
-  background-size:55px 55px;
-}
+  <meta charset="UTF-8">
+  <title>MomentumX Physics Simulator</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
 
-/* ─── HEADER ─── */
-header{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 18px;height:50px;flex-shrink:0;
-  background:rgba(1,6,16,0.98);border-bottom:1px solid var(--border);z-index:10;
-}
-.logo{display:flex;align-items:center;gap:11px;}
-.logo-ico{
-  width:34px;height:34px;border-radius:9px;
-  background:linear-gradient(135deg,var(--cyan),#0055ff);
-  display:flex;align-items:center;justify-content:center;font-size:17px;
-  box-shadow:var(--s-cyan);animation:hpulse 3s ease-in-out infinite;
-}
-@keyframes hpulse{0%,100%{box-shadow:0 0 12px rgba(0,220,255,0.4)}50%{box-shadow:0 0 30px rgba(0,220,255,0.85)}}
-.logo h1{font-size:15px;font-weight:800;letter-spacing:3px;color:var(--cyan);text-shadow:0 0 12px var(--cyan);text-transform:uppercase;}
-.logo small{font-size:9px;color:var(--txt2);letter-spacing:2px;display:block;}
-.hdr-r{display:flex;align-items:center;gap:9px;}
-.badge{padding:3px 11px;border-radius:20px;font-size:10px;letter-spacing:1px;display:flex;align-items:center;gap:5px;font-weight:600;}
-.b-green{background:rgba(0,255,153,0.09);border:1px solid rgba(0,255,153,0.3);color:var(--green);}
-.b-cyan{background:rgba(0,220,255,0.09);border:1px solid rgba(0,220,255,0.3);color:var(--cyan);}
-.b-orange{background:rgba(255,119,0,0.09);border:1px solid rgba(255,119,0,0.3);color:var(--orange);}
-.dot{width:5px;height:5px;border-radius:50%;background:currentColor;animation:blink 1.5s infinite;}
-@keyframes blink{0%,100%{opacity:1}50%{opacity:.15}}
-#clockEl{font-family:monospace;font-size:12px;color:var(--txt2);}
+    :root {
+      --bg: #020c1a;
+      --panel: rgba(3, 14, 32, 0.97);
+      --border: rgba(0, 220, 255, 0.15);
+      --cyan: #00dcff;
+      --pink: #ff2080;
+      --green: #00ff99;
+      --orange: #ff7700;
+      --yellow: #ffdd00;
+      --txt: #cce8ff;
+      --txt2: #4a85a8;
+      --txt3: #1a4060;
+      --s-cyan: 0 0 18px rgba(0, 220, 255, 0.4);
+    }
 
-/* ─── LAYOUT ─── */
-.layout{display:grid;grid-template-columns:285px 1fr 265px;flex:1;overflow:hidden;}
+    body {
+      background: var(--bg);
+      color: var(--txt);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      height: 100vh;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      background-image:
+        linear-gradient(rgba(0, 220, 255, 0.022) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 220, 255, 0.022) 1px, transparent 1px);
+      background-size: 55px 55px;
+    }
 
-/* ─── PANELS ─── */
-.panel{
-  background:var(--panel);border-right:1px solid var(--border);
-  overflow-y:auto;overflow-x:hidden;
-  scrollbar-width:thin;scrollbar-color:rgba(0,220,255,0.12) transparent;
-}
-.panel-r{border-left:1px solid var(--border);border-right:none;}
-::-webkit-scrollbar{width:3px;}
-::-webkit-scrollbar-thumb{background:rgba(0,220,255,0.12);border-radius:3px;}
+    /* ─── HEADER ─── */
+    header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      height: 50px;
+      flex-shrink: 0;
+      background: rgba(1, 6, 16, 0.98);
+      border-bottom: 1px solid var(--border);
+      z-index: 10;
+    }
 
-.sec{padding:13px 15px;border-bottom:1px solid rgba(0,220,255,0.06);}
-.sec-t{
-  font-size:9px;font-weight:700;letter-spacing:3px;color:var(--cyan);
-  text-transform:uppercase;margin-bottom:11px;
-  display:flex;align-items:center;gap:7px;
-}
-.sec-t::before{content:'';width:3px;height:10px;flex-shrink:0;background:linear-gradient(var(--cyan),#0055ff);border-radius:2px;}
+    .logo {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+    }
 
-/* ─── FORM ELEMENTS ─── */
-.fl{font-size:10px;color:var(--txt2);margin-bottom:3px;letter-spacing:.4px;display:block;}
-input[type=number],select{
-  width:100%;padding:7px 9px;
-  background:rgba(0,12,28,0.9);border:1px solid var(--border);
-  border-radius:7px;color:var(--txt);font-size:13px;font-family:monospace;
-  outline:none;transition:border .2s,box-shadow .2s;margin-bottom:7px;
-  -webkit-appearance:none;appearance:none;
-}
-input[type=number]:focus,select:focus{
-  border-color:var(--cyan);box-shadow:0 0 0 2px rgba(0,220,255,0.1);
-}
-select{
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='%2300dcff' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
-  background-repeat:no-repeat;background-position:right 9px center;padding-right:28px;cursor:pointer;
-}
-select option{background:#050f20;}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:7px;}
+    .logo-ico {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: linear-gradient(135deg, var(--cyan), #0055ff);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 17px;
+      box-shadow: var(--s-cyan);
+      animation: hpulse 3s ease-in-out infinite;
+    }
 
-/* ─── BODY CARDS ─── */
-.bcard{border-radius:9px;overflow:hidden;border:1px solid var(--border);margin-bottom:9px;background:rgba(0,10,24,0.8);}
-.bcard-h{display:flex;align-items:center;gap:7px;padding:7px 11px;border-bottom:1px solid var(--border);background:rgba(0,220,255,0.025);}
-.bball{width:12px;height:12px;border-radius:50%;border:2px solid currentColor;box-shadow:0 0 7px currentColor;flex-shrink:0;}
-.bcard-h span{font-size:11px;font-weight:700;letter-spacing:1px;}
-.bcard-b{padding:9px 11px;}
+    @keyframes hpulse {
 
-/* ─── SLIDERS ─── */
-.sl-wrap{margin-bottom:9px;}
-.sl-hd{display:flex;justify-content:space-between;margin-bottom:4px;}
-.sl-lbl{font-size:10px;color:var(--txt2);}
-.sl-val{font-size:11px;color:var(--cyan);font-family:monospace;font-weight:700;}
-input[type=range]{
-  width:100%;height:4px;-webkit-appearance:none;
-  background:rgba(0,220,255,0.1);border-radius:2px;outline:none;cursor:pointer;margin-bottom:0;
-}
-input[type=range]::-webkit-slider-thumb{
-  -webkit-appearance:none;width:13px;height:13px;border-radius:50%;
-  background:var(--cyan);box-shadow:0 0 7px var(--cyan);cursor:pointer;
-}
+      0%,
+      100% {
+        box-shadow: 0 0 12px rgba(0, 220, 255, 0.4)
+      }
 
-/* ─── ★ START BUTTON ─── */
-#btnStart{
-  width:100%;padding:13px;
-  background:linear-gradient(135deg,#00dcff,#0050ff);
-  border:none;border-radius:11px;color:#000;
-  font-size:15px;font-weight:900;letter-spacing:3px;cursor:pointer;
-  box-shadow:0 0 22px rgba(0,220,255,0.45),0 4px 18px rgba(0,80,255,0.35);
-  transition:all .2s;text-transform:uppercase;
-  animation:sglow 2.5s ease-in-out infinite;
-}
-@keyframes sglow{
-  0%,100%{box-shadow:0 0 18px rgba(0,220,255,0.4),0 4px 15px rgba(0,80,255,0.3)}
-  50%{box-shadow:0 0 38px rgba(0,220,255,0.85),0 4px 28px rgba(0,80,255,0.6)}
-}
-#btnStart:hover{transform:translateY(-2px);box-shadow:0 0 48px rgba(0,220,255,0.9),0 8px 28px rgba(0,80,255,0.5);}
-#btnStart:active{transform:translateY(0);}
+      50% {
+        box-shadow: 0 0 30px rgba(0, 220, 255, 0.85)
+      }
+    }
 
-/* ─── BUTTONS ─── */
-.brow{display:flex;gap:7px;margin-top:8px;}
-.btn{
-  flex:1;padding:8px 5px;border-radius:8px;border:1px solid;
-  font-size:11px;font-weight:700;letter-spacing:.8px;cursor:pointer;
-  transition:all .2s;text-transform:uppercase;
-}
-.btn-c{background:rgba(0,220,255,0.07);border-color:rgba(0,220,255,0.45);color:var(--cyan);}
-.btn-c:hover{background:rgba(0,220,255,0.16);}
-.btn-p{background:rgba(255,32,128,0.07);border-color:rgba(255,32,128,0.4);color:var(--pink);}
-.btn-p:hover{background:rgba(255,32,128,0.16);}
-.btn-g{background:rgba(0,255,153,0.07);border-color:rgba(0,255,153,0.35);color:var(--green);}
-.btn-g:hover{background:rgba(0,255,153,0.16);}
-.btn-o{background:rgba(255,119,0,0.07);border-color:rgba(255,119,0,0.35);color:var(--orange);}
-.btn-o:hover{background:rgba(255,119,0,0.16);}
-.calc-btn{
-  width:100%;padding:8px;border-radius:8px;
-  background:rgba(255,119,0,0.1);border:1px solid rgba(255,119,0,0.4);
-  color:var(--orange);font-size:11px;font-weight:700;cursor:pointer;
-  letter-spacing:.8px;transition:all .2s;text-transform:uppercase;margin-top:6px;
-}
-.calc-btn:hover{background:rgba(255,119,0,0.2);}
+    .logo h1 {
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 3px;
+      color: var(--cyan);
+      text-shadow: 0 0 12px var(--cyan);
+      text-transform: uppercase;
+    }
 
-/* ─── TOGGLE ─── */
-.tog-row{display:flex;align-items:center;gap:6px;cursor:pointer;user-select:none;}
-.tog{width:32px;height:16px;border-radius:8px;position:relative;background:rgba(0,220,255,0.07);border:1px solid var(--border);transition:all .2s;}
-.tog.on{background:rgba(0,220,255,0.22);border-color:var(--cyan);}
-.tog::after{content:'';position:absolute;top:2px;left:2px;width:10px;height:10px;border-radius:50%;background:var(--txt3);transition:all .2s;}
-.tog.on::after{left:18px;background:var(--cyan);box-shadow:0 0 5px var(--cyan);}
-.tog-lbl{font-size:10px;color:var(--txt2);}
+    .logo small {
+      font-size: 9px;
+      color: var(--txt2);
+      letter-spacing: 2px;
+      display: block;
+    }
 
-/* ─── ICON BTNS ─── */
-.ibtn{
-  width:28px;height:28px;border-radius:7px;
-  background:rgba(0,220,255,0.05);border:1px solid var(--border);
-  color:var(--txt2);font-size:14px;cursor:pointer;transition:all .2s;
-  display:flex;align-items:center;justify-content:center;
-}
-.ibtn:hover{border-color:var(--cyan);color:var(--cyan);}
+    .hdr-r {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+    }
 
-/* ─── CANVAS ─── */
-.canvas-area{display:flex;flex-direction:column;background:radial-gradient(ellipse at center,#030c1e 0%,#010810 100%);}
-.toolbar{
-  display:flex;align-items:center;justify-content:space-between;
-  padding:6px 13px;gap:9px;background:rgba(1,6,16,0.92);
-  border-bottom:1px solid var(--border);flex-shrink:0;
-}
-.tb-g{display:flex;align-items:center;gap:6px;}
-.canvas-wrap{flex:1;position:relative;overflow:hidden;}
-#cv{display:block;width:100%;height:100%;}
-.hud{position:absolute;pointer-events:none;font-family:monospace;font-size:10px;padding:3px 7px;border-radius:5px;border:1px solid;}
-.hud-fps{top:9px;right:9px;color:var(--green);background:rgba(0,8,18,0.8);border-color:rgba(0,255,153,0.18);}
-.hud-time{top:9px;left:9px;color:var(--cyan);background:rgba(0,8,18,0.8);border-color:rgba(0,220,255,0.18);}
-.flash{position:absolute;inset:0;opacity:0;pointer-events:none;background:rgba(0,220,255,0.1);transition:opacity .05s;}
-.flash.on{opacity:1;}
+    .badge {
+      padding: 3px 11px;
+      border-radius: 20px;
+      font-size: 10px;
+      letter-spacing: 1px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-weight: 600;
+    }
 
-/* ─── RIGHT PANEL ─── */
-.tabs{display:flex;border-bottom:1px solid var(--border);}
-.tab{padding:8px 12px;font-size:9px;font-weight:700;letter-spacing:2px;cursor:pointer;color:var(--txt3);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s;text-transform:uppercase;}
-.tab.on{color:var(--cyan);border-bottom-color:var(--cyan);}
-.tab:hover:not(.on){color:var(--txt2);}
-.tc{display:none;}.tc.on{display:block;}
+    .b-green {
+      background: rgba(0, 255, 153, 0.09);
+      border: 1px solid rgba(0, 255, 153, 0.3);
+      color: var(--green);
+    }
 
-/* ─── DATA ─── */
-.dr{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:1px solid rgba(0,220,255,0.04);font-size:12px;}
-.dl{color:var(--txt2);font-size:10px;font-family:monospace;}
-.dv{font-family:monospace;font-weight:700;font-size:12px;}
-.c{color:var(--cyan);}.g{color:var(--green);}.o{color:var(--orange);}.pk{color:var(--pink);}
+    .b-cyan {
+      background: rgba(0, 220, 255, 0.09);
+      border: 1px solid rgba(0, 220, 255, 0.3);
+      color: var(--cyan);
+    }
 
-.cbox{display:flex;align-items:center;gap:9px;padding:9px 11px;border-radius:8px;background:rgba(255,32,128,0.05);border:1px solid rgba(255,32,128,0.18);}
-.cnum{font-size:26px;font-weight:900;color:var(--pink);text-shadow:0 0 14px var(--pink);font-family:monospace;line-height:1;}
-.clbl{font-size:8px;color:var(--pink);opacity:.6;letter-spacing:1px;margin-top:2px;}
+    .b-orange {
+      background: rgba(255, 119, 0, 0.09);
+      border: 1px solid rgba(255, 119, 0, 0.3);
+      color: var(--orange);
+    }
 
-table{width:100%;border-collapse:collapse;font-size:11px;font-family:monospace;}
-th{color:var(--txt2);padding:4px 5px;text-align:left;border-bottom:1px solid var(--border);font-size:9px;letter-spacing:.4px;}
-td{padding:4px 5px;border-bottom:1px solid rgba(0,220,255,0.035);}
+    .dot {
+      width: 5px;
+      height: 5px;
+      border-radius: 50%;
+      background: currentColor;
+      animation: blink 1.5s infinite;
+    }
 
-.chart-box{width:100%;height:72px;border-radius:7px;background:rgba(0,8,20,0.7);border:1px solid var(--border);overflow:hidden;margin-top:6px;position:relative;}
-.chart-box canvas{width:100%;height:100%;}
+    @keyframes blink {
 
-.atext{font-size:12px;color:var(--txt2);line-height:1.65;background:rgba(0,220,255,0.025);border:1px solid var(--border);border-radius:8px;padding:11px;}
-.atext b{color:var(--cyan);}
+      0%,
+      100% {
+        opacity: 1
+      }
 
-.exp-box{background:rgba(0,6,18,0.8);border:1px solid var(--border);border-radius:7px;padding:9px;font-family:monospace;font-size:9px;color:var(--txt2);white-space:pre;max-height:100px;overflow-y:auto;line-height:1.6;}
-.ana-tbl{width:100%;border-collapse:collapse;font-size:10px;font-family:monospace;margin-top:4px;}
-.ana-tbl th{color:var(--txt2);padding:4px 5px;text-align:left;border-bottom:1px solid var(--border);font-size:9px;white-space:nowrap;letter-spacing:.3px;}
-.ana-tbl td{padding:4px 5px;border-bottom:1px solid rgba(0,220,255,0.04);white-space:nowrap;}
-.ana-tbl tr:last-child td{border-bottom:none;}
-.ebar-wrap{display:flex;align-items:center;gap:6px;margin:3px 0;}
-.ebar-lbl{font-size:10px;color:var(--txt2);font-family:monospace;width:105px;flex-shrink:0;}
-.ebar{flex:1;height:5px;background:rgba(0,220,255,0.08);border-radius:3px;overflow:hidden;}
-.ebar-fill{height:100%;border-radius:3px;transition:width .4s;}
-.ebar-val{font-size:10px;font-family:monospace;width:72px;text-align:right;flex-shrink:0;}
+      50% {
+        opacity: .15
+      }
+    }
 
-/* ─── NOTIFICATION ─── */
-#notif{
-  position:fixed;bottom:16px;right:16px;z-index:999;
-  background:var(--panel);border:1px solid var(--cyan);border-radius:9px;
-  padding:10px 16px;font-size:11px;color:var(--cyan);font-family:monospace;
-  box-shadow:0 0 22px rgba(0,220,255,0.3);
-  transform:translateX(160%);transition:transform .3s;max-width:240px;
-}
-#notif.show{transform:translateX(0);}
+    #clockEl {
+      font-family: monospace;
+      font-size: 12px;
+      color: var(--txt2);
+    }
 
-/* ─── REVERSE SECTION ─── */
-#revSection{margin-top:10px;}
-#revSection input{margin-bottom:6px;}
-</style>
+    /* ─── LAYOUT ─── */
+    .layout {
+      display: grid;
+      grid-template-columns: 285px 1fr 265px;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    /* ─── PANELS ─── */
+    .panel {
+      background: var(--panel);
+      border-right: 1px solid var(--border);
+      overflow-y: auto;
+      overflow-x: hidden;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(0, 220, 255, 0.12) transparent;
+    }
+
+    .panel-r {
+      border-left: 1px solid var(--border);
+      border-right: none;
+    }
+
+    ::-webkit-scrollbar {
+      width: 3px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: rgba(0, 220, 255, 0.12);
+      border-radius: 3px;
+    }
+
+    .sec {
+      padding: 13px 15px;
+      border-bottom: 1px solid rgba(0, 220, 255, 0.06);
+    }
+
+    .sec-t {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      color: var(--cyan);
+      text-transform: uppercase;
+      margin-bottom: 11px;
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .sec-t::before {
+      content: '';
+      width: 3px;
+      height: 10px;
+      flex-shrink: 0;
+      background: linear-gradient(var(--cyan), #0055ff);
+      border-radius: 2px;
+    }
+
+    /* ─── FORM ELEMENTS ─── */
+    .fl {
+      font-size: 10px;
+      color: var(--txt2);
+      margin-bottom: 3px;
+      letter-spacing: .4px;
+      display: block;
+    }
+
+    input[type=number],
+    select {
+      width: 100%;
+      padding: 7px 9px;
+      background: rgba(0, 12, 28, 0.9);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      color: var(--txt);
+      font-size: 13px;
+      font-family: monospace;
+      outline: none;
+      transition: border .2s, box-shadow .2s;
+      margin-bottom: 7px;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    input[type=number]:focus,
+    select:focus {
+      border-color: var(--cyan);
+      box-shadow: 0 0 0 2px rgba(0, 220, 255, 0.1);
+    }
+
+    select {
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='%2300dcff' viewBox='0 0 16 16'%3E%3Cpath d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 9px center;
+      padding-right: 28px;
+      cursor: pointer;
+    }
+
+    select option {
+      background: #050f20;
+    }
+
+    .g2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+    }
+
+    /* ─── BODY CARDS ─── */
+    .bcard {
+      border-radius: 9px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      margin-bottom: 9px;
+      background: rgba(0, 10, 24, 0.8);
+    }
+
+    .bcard-h {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 7px 11px;
+      border-bottom: 1px solid var(--border);
+      background: rgba(0, 220, 255, 0.025);
+    }
+
+    .bball {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      border: 2px solid currentColor;
+      box-shadow: 0 0 7px currentColor;
+      flex-shrink: 0;
+    }
+
+    .bcard-h span {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+
+    .bcard-b {
+      padding: 9px 11px;
+    }
+
+    /* ─── SLIDERS ─── */
+    .sl-wrap {
+      margin-bottom: 9px;
+    }
+
+    .sl-hd {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    .sl-lbl {
+      font-size: 10px;
+      color: var(--txt2);
+    }
+
+    .sl-val {
+      font-size: 11px;
+      color: var(--cyan);
+      font-family: monospace;
+      font-weight: 700;
+    }
+
+    input[type=range] {
+      width: 100%;
+      height: 4px;
+      -webkit-appearance: none;
+      background: rgba(0, 220, 255, 0.1);
+      border-radius: 2px;
+      outline: none;
+      cursor: pointer;
+      margin-bottom: 0;
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 13px;
+      height: 13px;
+      border-radius: 50%;
+      background: var(--cyan);
+      box-shadow: 0 0 7px var(--cyan);
+      cursor: pointer;
+    }
+
+    /* ─── ★ START BUTTON ─── */
+    #btnStart {
+      width: 100%;
+      padding: 13px;
+      background: linear-gradient(135deg, #00dcff, #0050ff);
+      border: none;
+      border-radius: 11px;
+      color: #000;
+      font-size: 15px;
+      font-weight: 900;
+      letter-spacing: 3px;
+      cursor: pointer;
+      box-shadow: 0 0 22px rgba(0, 220, 255, 0.45), 0 4px 18px rgba(0, 80, 255, 0.35);
+      transition: all .2s;
+      text-transform: uppercase;
+      animation: sglow 2.5s ease-in-out infinite;
+    }
+
+    @keyframes sglow {
+
+      0%,
+      100% {
+        box-shadow: 0 0 18px rgba(0, 220, 255, 0.4), 0 4px 15px rgba(0, 80, 255, 0.3)
+      }
+
+      50% {
+        box-shadow: 0 0 38px rgba(0, 220, 255, 0.85), 0 4px 28px rgba(0, 80, 255, 0.6)
+      }
+    }
+
+    #btnStart:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 0 48px rgba(0, 220, 255, 0.9), 0 8px 28px rgba(0, 80, 255, 0.5);
+    }
+
+    #btnStart:active {
+      transform: translateY(0);
+    }
+
+    /* ─── BUTTONS ─── */
+    .brow {
+      display: flex;
+      gap: 7px;
+      margin-top: 8px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 8px 5px;
+      border-radius: 8px;
+      border: 1px solid;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: .8px;
+      cursor: pointer;
+      transition: all .2s;
+      text-transform: uppercase;
+    }
+
+    .btn-c {
+      background: rgba(0, 220, 255, 0.07);
+      border-color: rgba(0, 220, 255, 0.45);
+      color: var(--cyan);
+    }
+
+    .btn-c:hover {
+      background: rgba(0, 220, 255, 0.16);
+    }
+
+    .btn-p {
+      background: rgba(255, 32, 128, 0.07);
+      border-color: rgba(255, 32, 128, 0.4);
+      color: var(--pink);
+    }
+
+    .btn-p:hover {
+      background: rgba(255, 32, 128, 0.16);
+    }
+
+    .btn-g {
+      background: rgba(0, 255, 153, 0.07);
+      border-color: rgba(0, 255, 153, 0.35);
+      color: var(--green);
+    }
+
+    .btn-g:hover {
+      background: rgba(0, 255, 153, 0.16);
+    }
+
+    .btn-o {
+      background: rgba(255, 119, 0, 0.07);
+      border-color: rgba(255, 119, 0, 0.35);
+      color: var(--orange);
+    }
+
+    .btn-o:hover {
+      background: rgba(255, 119, 0, 0.16);
+    }
+
+    .calc-btn {
+      width: 100%;
+      padding: 8px;
+      border-radius: 8px;
+      background: rgba(255, 119, 0, 0.1);
+      border: 1px solid rgba(255, 119, 0, 0.4);
+      color: var(--orange);
+      font-size: 11px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: .8px;
+      transition: all .2s;
+      text-transform: uppercase;
+      margin-top: 6px;
+    }
+
+    .calc-btn:hover {
+      background: rgba(255, 119, 0, 0.2);
+    }
+
+    /* ─── TOGGLE ─── */
+    .tog-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .tog {
+      width: 32px;
+      height: 16px;
+      border-radius: 8px;
+      position: relative;
+      background: rgba(0, 220, 255, 0.07);
+      border: 1px solid var(--border);
+      transition: all .2s;
+    }
+
+    .tog.on {
+      background: rgba(0, 220, 255, 0.22);
+      border-color: var(--cyan);
+    }
+
+    .tog::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--txt3);
+      transition: all .2s;
+    }
+
+    .tog.on::after {
+      left: 18px;
+      background: var(--cyan);
+      box-shadow: 0 0 5px var(--cyan);
+    }
+
+    .tog-lbl {
+      font-size: 10px;
+      color: var(--txt2);
+    }
+
+    /* ─── ICON BTNS ─── */
+    .ibtn {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      background: rgba(0, 220, 255, 0.05);
+      border: 1px solid var(--border);
+      color: var(--txt2);
+      font-size: 14px;
+      cursor: pointer;
+      transition: all .2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ibtn:hover {
+      border-color: var(--cyan);
+      color: var(--cyan);
+    }
+
+    /* ─── CANVAS ─── */
+    .canvas-area {
+      display: flex;
+      flex-direction: column;
+      background: radial-gradient(ellipse at center, #030c1e 0%, #010810 100%);
+    }
+
+    .toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 13px;
+      gap: 9px;
+      background: rgba(1, 6, 16, 0.92);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .tb-g {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .canvas-wrap {
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    #cv {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .hud {
+      position: absolute;
+      pointer-events: none;
+      font-family: monospace;
+      font-size: 10px;
+      padding: 3px 7px;
+      border-radius: 5px;
+      border: 1px solid;
+    }
+
+    .hud-fps {
+      top: 9px;
+      right: 9px;
+      color: var(--green);
+      background: rgba(0, 8, 18, 0.8);
+      border-color: rgba(0, 255, 153, 0.18);
+    }
+
+    .hud-time {
+      top: 9px;
+      left: 9px;
+      color: var(--cyan);
+      background: rgba(0, 8, 18, 0.8);
+      border-color: rgba(0, 220, 255, 0.18);
+    }
+
+    .flash {
+      position: absolute;
+      inset: 0;
+      opacity: 0;
+      pointer-events: none;
+      background: rgba(0, 220, 255, 0.1);
+      transition: opacity .05s;
+    }
+
+    .flash.on {
+      opacity: 1;
+    }
+
+    /* ─── RIGHT PANEL ─── */
+    .tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tab {
+      padding: 8px 12px;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      cursor: pointer;
+      color: var(--txt3);
+      border-bottom: 2px solid transparent;
+      margin-bottom: -1px;
+      transition: all .2s;
+      text-transform: uppercase;
+    }
+
+    .tab.on {
+      color: var(--cyan);
+      border-bottom-color: var(--cyan);
+    }
+
+    .tab:hover:not(.on) {
+      color: var(--txt2);
+    }
+
+    .tc {
+      display: none;
+    }
+
+    .tc.on {
+      display: block;
+    }
+
+    /* ─── DATA ─── */
+    .dr {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 0;
+      border-bottom: 1px solid rgba(0, 220, 255, 0.04);
+      font-size: 12px;
+    }
+
+    .dl {
+      color: var(--txt2);
+      font-size: 10px;
+      font-family: monospace;
+    }
+
+    .dv {
+      font-family: monospace;
+      font-weight: 700;
+      font-size: 12px;
+    }
+
+    .c {
+      color: var(--cyan);
+    }
+
+    .g {
+      color: var(--green);
+    }
+
+    .o {
+      color: var(--orange);
+    }
+
+    .pk {
+      color: var(--pink);
+    }
+
+    .cbox {
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      padding: 9px 11px;
+      border-radius: 8px;
+      background: rgba(255, 32, 128, 0.05);
+      border: 1px solid rgba(255, 32, 128, 0.18);
+    }
+
+    .cnum {
+      font-size: 26px;
+      font-weight: 900;
+      color: var(--pink);
+      text-shadow: 0 0 14px var(--pink);
+      font-family: monospace;
+      line-height: 1;
+    }
+
+    .clbl {
+      font-size: 8px;
+      color: var(--pink);
+      opacity: .6;
+      letter-spacing: 1px;
+      margin-top: 2px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 11px;
+      font-family: monospace;
+    }
+
+    th {
+      color: var(--txt2);
+      padding: 4px 5px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      font-size: 9px;
+      letter-spacing: .4px;
+    }
+
+    td {
+      padding: 4px 5px;
+      border-bottom: 1px solid rgba(0, 220, 255, 0.035);
+    }
+
+    .chart-box {
+      width: 100%;
+      height: 72px;
+      border-radius: 7px;
+      background: rgba(0, 8, 20, 0.7);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      margin-top: 6px;
+      position: relative;
+    }
+
+    .chart-box canvas {
+      width: 100%;
+      height: 100%;
+    }
+
+    .atext {
+      font-size: 12px;
+      color: var(--txt2);
+      line-height: 1.65;
+      background: rgba(0, 220, 255, 0.025);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 11px;
+    }
+
+    .atext b {
+      color: var(--cyan);
+    }
+
+    .exp-box {
+      background: rgba(0, 6, 18, 0.8);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      padding: 9px;
+      font-family: monospace;
+      font-size: 9px;
+      color: var(--txt2);
+      white-space: pre;
+      max-height: 100px;
+      overflow-y: auto;
+      line-height: 1.6;
+    }
+
+    .ana-tbl {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 10px;
+      font-family: monospace;
+      margin-top: 4px;
+    }
+
+    .ana-tbl th {
+      color: var(--txt2);
+      padding: 4px 5px;
+      text-align: left;
+      border-bottom: 1px solid var(--border);
+      font-size: 9px;
+      white-space: nowrap;
+      letter-spacing: .3px;
+    }
+
+    .ana-tbl td {
+      padding: 4px 5px;
+      border-bottom: 1px solid rgba(0, 220, 255, 0.04);
+      white-space: nowrap;
+    }
+
+    .ana-tbl tr:last-child td {
+      border-bottom: none;
+    }
+
+    .ebar-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin: 3px 0;
+    }
+
+    .ebar-lbl {
+      font-size: 10px;
+      color: var(--txt2);
+      font-family: monospace;
+      width: 105px;
+      flex-shrink: 0;
+    }
+
+    .ebar {
+      flex: 1;
+      height: 5px;
+      background: rgba(0, 220, 255, 0.08);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .ebar-fill {
+      height: 100%;
+      border-radius: 3px;
+      transition: width .4s;
+    }
+
+    .ebar-val {
+      font-size: 10px;
+      font-family: monospace;
+      width: 72px;
+      text-align: right;
+      flex-shrink: 0;
+    }
+
+    /* ─── NOTIFICATION ─── */
+    #notif {
+      position: fixed;
+      bottom: 16px;
+      right: 16px;
+      z-index: 999;
+      background: var(--panel);
+      border: 1px solid var(--cyan);
+      border-radius: 9px;
+      padding: 10px 16px;
+      font-size: 11px;
+      color: var(--cyan);
+      font-family: monospace;
+      box-shadow: 0 0 22px rgba(0, 220, 255, 0.3);
+      transform: translateX(160%);
+      transition: transform .3s;
+      max-width: 240px;
+    }
+
+    #notif.show {
+      transform: translateX(0);
+    }
+
+    /* ─── REVERSE SECTION ─── */
+    #revSection {
+      margin-top: 10px;
+    }
+
+    #revSection input {
+      margin-bottom: 6px;
+    }
+  </style>
 </head>
+
 <body>
 
-<!-- HEADER -->
-<header>
-  <div class="logo">
-    <div class="logo-ico">⚛</div>
-    <div>
-      <h1>MomentumX</h1>
-      <small>Physics Simulator — 100% OFFLINE</small>
-    </div>
-  </div>
-  <div class="hdr-r">
-    <div class="badge b-green"><div class="dot"></div>OFFLINE READY</div>
-    <div class="badge b-cyan" id="modeBadge">▶ FORWARD</div>
-    <div id="clockEl">00:00:00</div>
-  </div>
-</header>
-
-<div class="layout">
-
-<!-- ════ LEFT PANEL ════ -->
-<div class="panel">
-
-  <!-- Config -->
-  <div class="sec">
-    <div class="sec-t">Konfigurimi</div>
-
-    <label class="fl">NUMRI I TRUPAVE</label>
-    <select id="bodyCount" onchange="rebuildForms()">
-      <option value="2">2 Trupa</option>
-      <option value="3">3 Trupa</option>
-      <option value="4">4 Trupa</option>
-      <option value="5">5 Trupa</option>
-    </select>
-
-    <label class="fl">KËNDI KRYESOR I PËRPLASJES (°)</label>
-    <input type="number" id="collAngle" value="0" min="0" max="360">
-
-    <label class="fl">LLOJI I PËRPLASJES</label>
-    <select id="collType" onchange="syncE()">
-      <option value="1">Elastike (e = 1.0)</option>
-      <option value="0.75" selected>Pjesërisht Inelastike (e = 0.75)</option>
-      <option value="0.4">Inelastike (e = 0.4)</option>
-      <option value="0">Perfektisht Inelastike (e = 0)</option>
-    </select>
-
-    <div class="sl-wrap">
-      <div class="sl-hd">
-        <span class="sl-lbl">KOEFICIENTI e</span>
-        <span class="sl-val" id="eValLbl">0.75</span>
+  <!-- HEADER -->
+  <header>
+    <div class="logo">
+      <div class="logo-ico">⚛</div>
+      <div>
+        <h1>MomentumX</h1>
+        <small>Physics Simulator — 100% OFFLINE</small>
       </div>
-      <input type="range" id="eSlider" min="0" max="1" step="0.05" value="0.75"
-        oninput="document.getElementById('eValLbl').textContent=parseFloat(this.value).toFixed(2)">
     </div>
-  </div>
-
-  <!-- Body params -->
-  <div class="sec">
-    <div class="sec-t">Parametrat e Trupave</div>
-    <div id="bodyForms"></div>
-  </div>
-
-  <!-- Mode + Reverse -->
-  <div class="sec">
-    <div class="sec-t">Modaliteti</div>
-    <div class="brow" style="margin-top:0;">
-      <button class="btn btn-c" id="btnFwd"  onclick="setMode('forward')">▶ FORWARD</button>
-      <button class="btn btn-o" id="btnRev"  onclick="setMode('reverse')">◀ REVERSE</button>
+    <div class="hdr-r">
+      <div class="badge b-green">
+        <div class="dot"></div>OFFLINE READY
+      </div>
+      <div class="badge b-cyan" id="modeBadge">▶ FORWARD</div>
+      <div id="clockEl">00:00:00</div>
     </div>
+  </header>
 
-    <!-- REVERSE INPUTS -->
-    <div id="revSection" style="display:none;">
-      <div style="margin-top:10px;">
-        <div class="g2">
-          <div>
-            <label class="fl">v Finale T1 (m/s)</label>
-            <input type="number" id="revV1" value="2" step="0.1" min="0">
+  <div class="layout">
+
+    <!-- ════ LEFT PANEL ════ -->
+    <div class="panel">
+
+      <!-- Config -->
+      <div class="sec">
+        <div class="sec-t">Konfigurimi</div>
+
+        <label class="fl">NUMRI I TRUPAVE</label>
+        <select id="bodyCount" onchange="rebuildForms()">
+          <option value="2">2 Trupa</option>
+          <option value="3">3 Trupa</option>
+          <option value="4">4 Trupa</option>
+          <option value="5">5 Trupa</option>
+        </select>
+
+        <label class="fl">KËNDI KRYESOR I PËRPLASJES (°)</label>
+        <input type="number" id="collAngle" value="0" min="0" max="360">
+
+        <label class="fl">LLOJI I PËRPLASJES</label>
+        <select id="collType" onchange="syncE()">
+          <option value="1">Elastike (e = 1.0)</option>
+          <option value="0.75" selected>Pjesërisht Inelastike (e = 0.75)</option>
+          <option value="0.4">Inelastike (e = 0.4)</option>
+          <option value="0">Perfektisht Inelastike (e = 0)</option>
+        </select>
+
+        <div class="sl-wrap">
+          <div class="sl-hd">
+            <span class="sl-lbl">KOEFICIENTI e</span>
+            <span class="sl-val" id="eValLbl">0.75</span>
           </div>
-          <div>
-            <label class="fl">v Finale T2 (m/s)</label>
-            <input type="number" id="revV2" value="5" step="0.1" min="0">
-          </div>
-          <div>
-            <label class="fl">Drejtimi Final T1 (°)</label>
-            <input type="number" id="revAngle1" value="120">
-          </div>
-          <div>
-            <label class="fl">Drejtimi Final T2 (°)</label>
-            <input type="number" id="revAngle2" value="300">
-          </div>
-        </div>
-        <button class="calc-btn" onclick="calcReverse()">🔍 LLOGARIT GJENDJEN FILLESTARE</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- ★ START -->
-  <div class="sec">
-    <button id="btnStart" onclick="startSim()">▶ STARTIM</button>
-    <div class="brow">
-      <button class="btn btn-c" onclick="togglePause()" id="btnPause">⏸ PAUSE</button>
-      <button class="btn btn-p" onclick="resetSim()">↺ RESET</button>
-      <button class="btn btn-g" onclick="doExport()">⬇ EXPORT</button>
-    </div>
-  </div>
-
-</div><!-- /left -->
-
-<!-- ════ CANVAS ════ -->
-<div class="canvas-area">
-  <div class="toolbar">
-    <div class="tb-g">
-      <div class="ibtn" onclick="doZoom(1.15)" title="Zoom In">＋</div>
-      <div class="ibtn" onclick="doZoom(0.87)" title="Zoom Out">－</div>
-      <div class="ibtn" onclick="resetView()" title="Reset view">⊙</div>
-      <span id="zoomLbl" style="font-size:10px;color:var(--txt2);">100%</span>
-    </div>
-    <div class="tb-g">
-      <span class="sl-lbl">SLOW MO</span>
-      <input type="range" id="speedSlider" min="0.05" max="2" step="0.05" value="1" style="width:80px"
-        oninput="simSpeed=parseFloat(this.value);document.getElementById('speedLbl').textContent=parseFloat(this.value).toFixed(2)+'×'">
-      <span id="speedLbl" class="sl-val">1.00×</span>
-    </div>
-    <div class="tb-g" style="gap:10px;">
-      <div class="tog-row" onclick="toggleOpt('trails')">
-        <div class="tog on" id="togTrails"></div><span class="tog-lbl">TRAILS</span>
-      </div>
-      <div class="tog-row" onclick="toggleOpt('vectors')">
-        <div class="tog on" id="togVectors"></div><span class="tog-lbl">VECTORS</span>
-      </div>
-      <div class="tog-row" onclick="toggleOpt('grid')">
-        <div class="tog on" id="togGrid"></div><span class="tog-lbl">GRID</span>
-      </div>
-    </div>
-  </div>
-  <div class="canvas-wrap">
-    <canvas id="cv"></canvas>
-    <div class="flash" id="flash"></div>
-    <div class="hud hud-fps" id="fpsHud">60 FPS</div>
-    <div class="hud hud-time" id="timeHud">T: 0.00 s</div>
-  </div>
-</div>
-
-<!-- ════ RIGHT PANEL ════ -->
-<div class="panel panel-r">
-  <div class="tabs">
-    <div class="tab on" onclick="switchTab('res',this)">REZULTATE</div>
-    <div class="tab"    onclick="switchTab('charts',this)">GRAFIK</div>
-    <div class="tab"    onclick="switchTab('ana',this)">ANALIZA</div>
-  </div>
-
-  <!-- RESULTS -->
-  <div class="tc on" id="tc-res">
-    <div class="sec">
-      <div class="sec-t">Statistikat</div>
-      <div class="cbox">
-        <div>
-          <div class="cnum" id="collN">0</div>
-          <div class="clbl">PËRPLASJE</div>
-        </div>
-        <div style="flex:1">
-          <div class="dr"><span class="dl">Energji e humbur</span><span class="dv pk" id="eLost">0.000 J</span></div>
-          <div class="dr"><span class="dl">Kohëzgjatja</span><span class="dv c"  id="simDur">0.00 s</span></div>
+          <input type="range" id="eSlider" min="0" max="1" step="0.05" value="0.75"
+            oninput="document.getElementById('eValLbl').textContent=parseFloat(this.value).toFixed(2)">
         </div>
       </div>
-    </div>
 
-    <div class="sec">
-      <div class="sec-t">Momenti Linear</div>
-      <div class="dr"><span class="dl">p_total fillestare</span><span class="dv c"  id="pInit">—</span></div>
-      <div class="dr"><span class="dl">p_total aktuale</span>  <span class="dv g"  id="pCur">—</span></div>
-      <div class="dr"><span class="dl">Ek totale</span>        <span class="dv o"  id="ekTot">—</span></div>
-      <div class="dr"><span class="dl">Koef. e</span>          <span class="dv c"  id="eDisp">—</span></div>
-    </div>
+      <!-- Body params -->
+      <div class="sec">
+        <div class="sec-t">Parametrat e Trupave</div>
+        <div id="bodyForms"></div>
+      </div>
 
-    <div class="sec">
-      <div class="sec-t">Gjendja e Trupave</div>
-      <table>
-        <thead><tr><th>Trupi</th><th>v (m/s)</th><th>p (kg·m/s)</th><th>Ek (J)</th></tr></thead>
-        <tbody id="bodyTbl"></tbody>
-      </table>
-    </div>
+      <!-- Mode + Reverse -->
+      <div class="sec">
+        <div class="sec-t">Modaliteti</div>
+        <div class="brow" style="margin-top:0;">
+          <button class="btn btn-c" id="btnFwd" onclick="setMode('forward')">▶ FORWARD</button>
+          <button class="btn btn-o" id="btnRev" onclick="setMode('reverse')">◀ REVERSE</button>
+        </div>
 
-    <div class="sec">
-      <div class="sec-t">Ndalimi, Distanca &amp; Pas Përplasjes</div>
-      <div id="stopData"><span style="color:var(--txt3);font-size:11px;">Fillo simulimin...</span></div>
-    </div>
+        <!-- REVERSE INPUTS -->
+        <div id="revSection" style="display:none;">
+          <div style="margin-top:10px;">
+            <div class="g2">
+              <div>
+                <label class="fl">v Finale T1 (m/s)</label>
+                <input type="number" id="revV1" value="2" step="0.1" min="0">
+              </div>
+              <div>
+                <label class="fl">v Finale T2 (m/s)</label>
+                <input type="number" id="revV2" value="5" step="0.1" min="0">
+              </div>
+              <div>
+                <label class="fl">Drejtimi Final T1 (°)</label>
+                <input type="number" id="revAngle1" value="120">
+              </div>
+              <div>
+                <label class="fl">Drejtimi Final T2 (°)</label>
+                <input type="number" id="revAngle2" value="300">
+              </div>
+            </div>
+            <button class="calc-btn" onclick="calcReverse()">🔍 LLOGARIT GJENDJEN FILLESTARE</button>
+          </div>
+        </div>
+      </div>
 
-    <div class="sec" id="revResBox" style="display:none;">
-      <div class="sec-t">Simulimi i Kundërt</div>
-      <div class="atext" id="revRes"></div>
-    </div>
-  </div>
+      <!-- ★ START -->
+      <div class="sec">
+        <button id="btnStart" onclick="startSim()">▶ STARTIM</button>
+        <div class="brow">
+          <button class="btn btn-c" onclick="togglePause()" id="btnPause">⏸ PAUSE</button>
+          <button class="btn btn-p" onclick="resetSim()">↺ RESET</button>
+          <button class="btn btn-g" onclick="doExport()">⬇ EXPORT</button>
+        </div>
+      </div>
 
-  <!-- CHARTS -->
-  <div class="tc" id="tc-charts">
-    <div class="sec">
-      <div class="sec-t">Momenti p(t)</div>
-      <div class="chart-box"><canvas id="ch1"></canvas></div>
-    </div>
-    <div class="sec">
-      <div class="sec-t">Shpejtësia v(t)</div>
-      <div class="chart-box"><canvas id="ch2"></canvas></div>
-    </div>
-    <div class="sec">
-      <div class="sec-t">Energjia Ek(t)</div>
-      <div class="chart-box"><canvas id="ch3"></canvas></div>
-    </div>
-  </div>
+    </div><!-- /left -->
 
-  <!-- ANALYSIS -->
-  <div class="tc" id="tc-ana">
-
-    <!-- Per-body table -->
-    <div class="sec">
-      <div class="sec-t">Të Dhënat e Secilit Trup (SI)</div>
-      <div id="bodyAnaTbl" style="overflow-x:auto;">
-        <span style="color:var(--txt3);font-size:11px;">Fillo simulimin...</span>
+    <!-- ════ CANVAS ════ -->
+    <div class="canvas-area">
+      <div class="toolbar">
+        <div class="tb-g">
+          <div class="ibtn" onclick="doZoom(1.15)" title="Zoom In">＋</div>
+          <div class="ibtn" onclick="doZoom(0.87)" title="Zoom Out">－</div>
+          <div class="ibtn" onclick="resetView()" title="Reset view">⊙</div>
+          <span id="zoomLbl" style="font-size:10px;color:var(--txt2);">100%</span>
+        </div>
+        <div class="tb-g">
+          <span class="sl-lbl">SLOW MO</span>
+          <input type="range" id="speedSlider" min="0.05" max="2" step="0.05" value="1" style="width:80px"
+            oninput="simSpeed=parseFloat(this.value);document.getElementById('speedLbl').textContent=parseFloat(this.value).toFixed(2)+'×'">
+          <span id="speedLbl" class="sl-val">1.00×</span>
+        </div>
+        <div class="tb-g" style="gap:10px;">
+          <div class="tog-row" onclick="toggleOpt('trails')">
+            <div class="tog on" id="togTrails"></div><span class="tog-lbl">TRAILS</span>
+          </div>
+          <div class="tog-row" onclick="toggleOpt('vectors')">
+            <div class="tog on" id="togVectors"></div><span class="tog-lbl">VECTORS</span>
+          </div>
+          <div class="tog-row" onclick="toggleOpt('grid')">
+            <div class="tog on" id="togGrid"></div><span class="tog-lbl">GRID</span>
+          </div>
+        </div>
+      </div>
+      <div class="canvas-wrap">
+        <canvas id="cv"></canvas>
+        <div class="flash" id="flash"></div>
+        <div class="hud hud-fps" id="fpsHud">60 FPS</div>
+        <div class="hud hud-time" id="timeHud">T: 0.00 s</div>
       </div>
     </div>
 
-    <!-- Energy breakdown -->
-    <div class="sec">
-      <div class="sec-t">Bilanci i Energjisë (J)</div>
-      <div id="energyBreakdown">
-        <span style="color:var(--txt3);font-size:11px;">Fillo simulimin...</span>
+    <!-- ════ RIGHT PANEL ════ -->
+    <div class="panel panel-r">
+      <div class="tabs">
+        <div class="tab on" onclick="switchTab('res',this)">REZULTATE</div>
+        <div class="tab" onclick="switchTab('charts',this)">GRAFIK</div>
+        <div class="tab" onclick="switchTab('ana',this)">ANALIZA</div>
       </div>
-    </div>
 
-    <!-- Narrative analysis -->
-    <div class="sec">
-      <div class="sec-t">Analiza Fizike</div>
-      <div class="atext" id="anaText">Fillo simulimin për analizën fizike të detajuar...</div>
-    </div>
+      <!-- RESULTS -->
+      <div class="tc on" id="tc-res">
+        <div class="sec">
+          <div class="sec-t">Statistikat</div>
+          <div class="cbox">
+            <div>
+              <div class="cnum" id="collN">0</div>
+              <div class="clbl">PËRPLASJE</div>
+            </div>
+            <div style="flex:1">
+              <div class="dr"><span class="dl">Energji e humbur</span><span class="dv pk" id="eLost">0.000 J</span>
+              </div>
+              <div class="dr"><span class="dl">Kohëzgjatja</span><span class="dv c" id="simDur">0.00 s</span></div>
+            </div>
+          </div>
+        </div>
 
-    <!-- Formulat -->
-    <div class="sec">
-      <div class="sec-t">Formulat (Sistemi SI)</div>
-      <div class="atext" style="line-height:2.1;font-size:11px;">
-        <b>p = m · v</b>  [kg·m/s]<br>
-        <b>F_f = μ · m · g</b>  [N]<br>
-        <b>a = μ · g</b>  [m/s²] — deselerim<br>
-        <b>t_stop = v₀ / a</b>  [s]<br>
-        <b>s = v₀·t − ½·a·t²</b>  [m]<br>
-        <b>E_k = ½·m·v²</b>  [J]<br>
-        <b>E_f = F_f · s = μ·m·g·s</b>  [J]<br>
-        <b>Σp_i = Σp_f</b>  (ruajtja e momentit)<br>
-        <b>v₁' = ((m₁−e·m₂)v₁+(1+e)m₂v₂)/(m₁+m₂)</b>
+        <div class="sec">
+          <div class="sec-t">Momenti Linear</div>
+          <div class="dr"><span class="dl">p_total fillestare</span><span class="dv c" id="pInit">—</span></div>
+          <div class="dr"><span class="dl">p_total aktuale</span> <span class="dv g" id="pCur">—</span></div>
+          <div class="dr"><span class="dl">Ek totale</span> <span class="dv o" id="ekTot">—</span></div>
+          <div class="dr"><span class="dl">Koef. e</span> <span class="dv c" id="eDisp">—</span></div>
+        </div>
+
+        <div class="sec">
+          <div class="sec-t">Gjendja e Trupave</div>
+          <table>
+            <thead>
+              <tr>
+                <th>Trupi</th>
+                <th>v (m/s)</th>
+                <th>p (kg·m/s)</th>
+                <th>Ek (J)</th>
+              </tr>
+            </thead>
+            <tbody id="bodyTbl"></tbody>
+          </table>
+        </div>
+
+        <div class="sec">
+          <div class="sec-t">Ndalimi, Distanca &amp; Pas Përplasjes</div>
+          <div id="stopData"><span style="color:var(--txt3);font-size:11px;">Fillo simulimin...</span></div>
+        </div>
+
+        <div class="sec" id="revResBox" style="display:none;">
+          <div class="sec-t">Simulimi i Kundërt</div>
+          <div class="atext" id="revRes"></div>
+        </div>
       </div>
-    </div>
 
-    <!-- Charts in analysis tab too -->
-    <div class="sec">
-      <div class="sec-t">Grafiku p(t) — Momenti [kg·m/s]</div>
-      <div class="chart-box" style="height:90px;"><canvas id="ch1b"></canvas></div>
-      <div style="display:flex;justify-content:space-between;margin-top:4px;">
-        <span style="font-size:9px;color:var(--txt2);">t=0</span>
-        <span style="font-size:9px;color:var(--txt2);" id="ch1b-lbl">— kg·m/s</span>
-        <span style="font-size:9px;color:var(--txt2);">t=now</span>
+      <!-- CHARTS -->
+      <div class="tc" id="tc-charts">
+        <div class="sec">
+          <div class="sec-t">Momenti p(t)</div>
+          <div class="chart-box"><canvas id="ch1"></canvas></div>
+        </div>
+        <div class="sec">
+          <div class="sec-t">Shpejtësia v(t)</div>
+          <div class="chart-box"><canvas id="ch2"></canvas></div>
+        </div>
+        <div class="sec">
+          <div class="sec-t">Energjia Ek(t)</div>
+          <div class="chart-box"><canvas id="ch3"></canvas></div>
+        </div>
       </div>
-    </div>
-    <div class="sec">
-      <div class="sec-t">Grafiku v(t) — Shpejtësia [m/s]</div>
-      <div class="chart-box" style="height:90px;"><canvas id="ch2b"></canvas></div>
-      <div style="display:flex;justify-content:space-between;margin-top:4px;">
-        <span style="font-size:9px;color:var(--txt2);">t=0</span>
-        <span style="font-size:9px;color:var(--txt2);" id="ch2b-lbl">— m/s</span>
-        <span style="font-size:9px;color:var(--txt2);">t=now</span>
+
+      <!-- ANALYSIS -->
+      <div class="tc" id="tc-ana">
+
+        <!-- Per-body table -->
+        <div class="sec">
+          <div class="sec-t">Të Dhënat e Secilit Trup (SI)</div>
+          <div id="bodyAnaTbl" style="overflow-x:auto;">
+            <span style="color:var(--txt3);font-size:11px;">Fillo simulimin...</span>
+          </div>
+        </div>
+
+        <!-- Energy breakdown -->
+        <div class="sec">
+          <div class="sec-t">Bilanci i Energjisë (J)</div>
+          <div id="energyBreakdown">
+            <span style="color:var(--txt3);font-size:11px;">Fillo simulimin...</span>
+          </div>
+        </div>
+
+        <!-- Narrative analysis -->
+        <div class="sec">
+          <div class="sec-t">Analiza Fizike</div>
+          <div class="atext" id="anaText">Fillo simulimin për analizën fizike të detajuar...</div>
+        </div>
+
+        <!-- Formulat -->
+        <div class="sec">
+          <div class="sec-t">Formulat (Sistemi SI)</div>
+          <div class="atext" style="line-height:2.1;font-size:11px;">
+            <b>p = m · v</b> [kg·m/s]<br>
+            <b>F_f = μ · m · g</b> [N]<br>
+            <b>a = μ · g</b> [m/s²] — deselerim<br>
+            <b>t_stop = v₀ / a</b> [s]<br>
+            <b>s = v₀·t − ½·a·t²</b> [m]<br>
+            <b>E_k = ½·m·v²</b> [J]<br>
+            <b>E_f = F_f · s = μ·m·g·s</b> [J]<br>
+            <b>Σp_i = Σp_f</b> (ruajtja e momentit)<br>
+            <b>v₁' = ((m₁−e·m₂)v₁+(1+e)m₂v₂)/(m₁+m₂)</b>
+          </div>
+        </div>
+
+        <!-- Charts in analysis tab too -->
+        <div class="sec">
+          <div class="sec-t">Grafiku p(t) — Momenti [kg·m/s]</div>
+          <div class="chart-box" style="height:90px;"><canvas id="ch1b"></canvas></div>
+          <div style="display:flex;justify-content:space-between;margin-top:4px;">
+            <span style="font-size:9px;color:var(--txt2);">t=0</span>
+            <span style="font-size:9px;color:var(--txt2);" id="ch1b-lbl">— kg·m/s</span>
+            <span style="font-size:9px;color:var(--txt2);">t=now</span>
+          </div>
+        </div>
+        <div class="sec">
+          <div class="sec-t">Grafiku v(t) — Shpejtësia [m/s]</div>
+          <div class="chart-box" style="height:90px;"><canvas id="ch2b"></canvas></div>
+          <div style="display:flex;justify-content:space-between;margin-top:4px;">
+            <span style="font-size:9px;color:var(--txt2);">t=0</span>
+            <span style="font-size:9px;color:var(--txt2);" id="ch2b-lbl">— m/s</span>
+            <span style="font-size:9px;color:var(--txt2);">t=now</span>
+          </div>
+        </div>
+        <div class="sec">
+          <div class="sec-t">Grafiku E_k(t) — Energjia Kinetike [J]</div>
+          <div class="chart-box" style="height:90px;"><canvas id="ch3b"></canvas></div>
+          <div style="display:flex;justify-content:space-between;margin-top:4px;">
+            <span style="font-size:9px;color:var(--txt2);">t=0</span>
+            <span style="font-size:9px;color:var(--txt2);" id="ch3b-lbl">— J</span>
+            <span style="font-size:9px;color:var(--txt2);">t=now</span>
+          </div>
+        </div>
+
+        <!-- Export -->
+        <div class="sec">
+          <div class="sec-t">Eksporti CSV/TXT</div>
+          <div class="exp-box" id="expBox">// Rezultatet shfaqen këtu pas eksportit...</div>
+          <div style="margin-top:7px;">
+            <button class="calc-btn"
+              style="background:rgba(0,220,255,0.07);border-color:rgba(0,220,255,0.4);color:var(--cyan);"
+              onclick="copyExp()">📋 KOPJO</button>
+          </div>
+        </div>
       </div>
-    </div>
-    <div class="sec">
-      <div class="sec-t">Grafiku E_k(t) — Energjia Kinetike [J]</div>
-      <div class="chart-box" style="height:90px;"><canvas id="ch3b"></canvas></div>
-      <div style="display:flex;justify-content:space-between;margin-top:4px;">
-        <span style="font-size:9px;color:var(--txt2);">t=0</span>
-        <span style="font-size:9px;color:var(--txt2);" id="ch3b-lbl">— J</span>
-        <span style="font-size:9px;color:var(--txt2);">t=now</span>
-      </div>
-    </div>
 
-    <!-- Export -->
-    <div class="sec">
-      <div class="sec-t">Eksporti CSV/TXT</div>
-      <div class="exp-box" id="expBox">// Rezultatet shfaqen këtu pas eksportit...</div>
-      <div style="margin-top:7px;">
-        <button class="calc-btn" style="background:rgba(0,220,255,0.07);border-color:rgba(0,220,255,0.4);color:var(--cyan);" onclick="copyExp()">📋 KOPJO</button>
-      </div>
-    </div>
-  </div>
+    </div><!-- /right -->
+  </div><!-- /layout -->
 
-</div><!-- /right -->
-</div><!-- /layout -->
+  <div id="notif"></div>
 
-<div id="notif"></div>
-
-<!-- ════════════════════════════════════════════════
+  <!-- ════════════════════════════════════════════════
      PHYSICS ENGINE
 ════════════════════════════════════════════════ -->
-<script>
-"use strict";
+  <script>
+    "use strict";
 
-// ── CANVAS SETUP ──────────────────────────────────
-const cv   = document.getElementById('cv');
-const ctx  = cv.getContext('2d');
+    // ── CANVAS SETUP ──────────────────────────────────
+    const cv = document.getElementById('cv');
+    const ctx = cv.getContext('2d');
 
-// ── CONSTANTS ─────────────────────────────────────
-const G = 9.81;
-const MAX_PARTICLES = 300;
-const MAX_TRAIL     = 80;
+    // ── CONSTANTS ─────────────────────────────────────
+    const G = 9.81;
+    const MAX_PARTICLES = 300;
+    const MAX_TRAIL = 80;
 
-const COLORS = [
-  {c:'#00dcff', n:'TRUPI 1'},
-  {c:'#ff2080', n:'TRUPI 2'},
-  {c:'#00ff99', n:'TRUPI 3'},
-  {c:'#ffdd00', n:'TRUPI 4'},
-  {c:'#ff7700', n:'TRUPI 5'},
-];
+    const COLORS = [
+      { c: '#00dcff', n: 'TRUPI 1' },
+      { c: '#ff2080', n: 'TRUPI 2' },
+      { c: '#00ff99', n: 'TRUPI 3' },
+      { c: '#ffdd00', n: 'TRUPI 4' },
+      { c: '#ff7700', n: 'TRUPI 5' },
+    ];
 
-// ── STATE ─────────────────────────────────────────
-let running=false, paused=false;
-let simTime=0, simSpeed=1;
-let zoomLvl=1, panX=0, panY=0;
-let bodies=[], parts=[];
-let collCount=0;
-let raf=null, lastTs=null;
-let fpsArr=[], shakeAmt=0;
-let initEk=null, initP=0;
-let showTrails=true, showVectors=true, showGrid=true;
-let appMode='forward';
-let chartP=[], chartV=[], chartEk=[];
+    // ── STATE ─────────────────────────────────────────
+    let running = false, paused = false;
+    let simTime = 0, simSpeed = 1;
+    let zoomLvl = 1, panX = 0, panY = 0;
+    let bodies = [], parts = [];
+    let collCount = 0;
+    let raf = null, lastTs = null;
+    let fpsArr = [], shakeAmt = 0;
+    let initEk = null, initP = 0;
+    let showTrails = true, showVectors = true, showGrid = true;
+    let appMode = 'forward';
+    let chartP = [], chartV = [], chartEk = [];
 
-// ── INIT ──────────────────────────────────────────
-window.addEventListener('DOMContentLoaded', () => {
-  resize();
-  rebuildForms();
-  setInterval(clockTick, 1000);
-  window.addEventListener('resize', () => { resize(); if(!running) drawIdle(); });
+    // ── INIT ──────────────────────────────────────────
+    window.addEventListener('DOMContentLoaded', () => {
+      resize();
+      rebuildForms();
+      setInterval(clockTick, 1000);
+      window.addEventListener('resize', () => { resize(); if (!running) drawIdle(); });
 
-  // Drag-to-pan
-  let drag=false, dx=0, dy=0, px0=0, py0=0;
-  cv.addEventListener('mousedown', e => { drag=true; dx=e.clientX; dy=e.clientY; px0=panX; py0=panY; });
-  window.addEventListener('mousemove', e => { if(drag){ panX=px0+(e.clientX-dx); panY=py0+(e.clientY-dy); }});
-  window.addEventListener('mouseup',  () => drag=false);
-  cv.addEventListener('wheel', e => { e.preventDefault(); doZoom(e.deltaY<0?1.1:0.9); }, {passive:false});
+      // Drag-to-pan
+      let drag = false, dx = 0, dy = 0, px0 = 0, py0 = 0;
+      cv.addEventListener('mousedown', e => { drag = true; dx = e.clientX; dy = e.clientY; px0 = panX; py0 = panY; });
+      window.addEventListener('mousemove', e => { if (drag) { panX = px0 + (e.clientX - dx); panY = py0 + (e.clientY - dy); } });
+      window.addEventListener('mouseup', () => drag = false);
+      cv.addEventListener('wheel', e => { e.preventDefault(); doZoom(e.deltaY < 0 ? 1.1 : 0.9); }, { passive: false });
 
-  // Keyboard shortcuts
-  window.addEventListener('keydown', e => {
-    if(e.code==='Space')     { e.preventDefault(); running?togglePause():startSim(); }
-    if(e.code==='KeyR')      { resetSim(); }
-    if(e.code==='Equal'||e.code==='NumpadAdd')    doZoom(1.15);
-    if(e.code==='Minus'||e.code==='NumpadSubtract') doZoom(0.87);
-  });
+      // Keyboard shortcuts
+      window.addEventListener('keydown', e => {
+        if (e.code === 'Space') { e.preventDefault(); running ? togglePause() : startSim(); }
+        if (e.code === 'KeyR') { resetSim(); }
+        if (e.code === 'Equal' || e.code === 'NumpadAdd') doZoom(1.15);
+        if (e.code === 'Minus' || e.code === 'NumpadSubtract') doZoom(0.87);
+      });
 
-  drawIdle();
-  notify('MomentumX gati! Shtyp ▶ STARTIM ose Space.');
-});
+      drawIdle();
+      notify('MomentumX gati! Shtyp ▶ STARTIM ose Space.');
+    });
 
-function clockTick(){
-  const n=new Date();
-  document.getElementById('clockEl').textContent=
-    String(n.getHours()).padStart(2,'0')+':'+
-    String(n.getMinutes()).padStart(2,'0')+':'+
-    String(n.getSeconds()).padStart(2,'0');
-}
+    function clockTick() {
+      const n = new Date();
+      document.getElementById('clockEl').textContent =
+        String(n.getHours()).padStart(2, '0') + ':' +
+        String(n.getMinutes()).padStart(2, '0') + ':' +
+        String(n.getSeconds()).padStart(2, '0');
+    }
 
-function resize(){
-  const wr=cv.parentElement;
-  cv.width=wr.clientWidth;
-  cv.height=wr.clientHeight;
-}
+    function resize() {
+      const wr = cv.parentElement;
+      cv.width = wr.clientWidth;
+      cv.height = wr.clientHeight;
+    }
 
-// ── SYNC SELECT ↔ SLIDER ─────────────────────────
-function syncE(){
-  const v=document.getElementById('collType').value;
-  document.getElementById('eSlider').value=v;
-  document.getElementById('eValLbl').textContent=parseFloat(v).toFixed(2);
-}
+    // ── SYNC SELECT ↔ SLIDER ─────────────────────────
+    function syncE() {
+      const v = document.getElementById('collType').value;
+      document.getElementById('eSlider').value = v;
+      document.getElementById('eValLbl').textContent = parseFloat(v).toFixed(2);
+    }
 
-// ── BODY FORMS ───────────────────────────────────
-function rebuildForms(){
-  const n=+document.getElementById('bodyCount').value;
-  const def=[
-    {m:5,v:8, d:0,   mu:0.2,dist:160},
-    {m:3,v:0, d:180, mu:0.2,dist:160},
-    {m:4,v:5, d:90,  mu:0.15,dist:160},
-    {m:2,v:6, d:270, mu:0.25,dist:160},
-    {m:3,v:4, d:45,  mu:0.2, dist:160},
-  ];
-  let h='';
-  for(let i=0;i<n;i++){
-    const col=COLORS[i], d=def[i];
-    h+=`<div class="bcard">
+    // ── BODY FORMS ───────────────────────────────────
+    function rebuildForms() {
+      const n = +document.getElementById('bodyCount').value;
+      const def = [
+        { m: 5, v: 8, d: 0, mu: 0.2, dist: 160 },
+        { m: 3, v: 0, d: 180, mu: 0.2, dist: 160 },
+        { m: 4, v: 5, d: 90, mu: 0.15, dist: 160 },
+        { m: 2, v: 6, d: 270, mu: 0.25, dist: 160 },
+        { m: 3, v: 4, d: 45, mu: 0.2, dist: 160 },
+      ];
+      let h = '';
+      for (let i = 0; i < n; i++) {
+        const col = COLORS[i], d = def[i];
+        h += `<div class="bcard">
       <div class="bcard-h">
         <div class="bball" style="color:${col.c};border-color:${col.c};box-shadow:0 0 7px ${col.c}"></div>
         <span style="color:${col.c}">${col.n}</span>
@@ -641,433 +1296,435 @@ function rebuildForms(){
         <input type="number" id="dist${i}" value="${d.dist}" step="20" min="30">
       </div>
     </div>`;
-  }
-  document.getElementById('bodyForms').innerHTML=h;
-}
-
-// ── BUILD BODIES ─────────────────────────────────
-function buildBodies(){
-  const n=+document.getElementById('bodyCount').value;
-  const baseAngleDeg=+document.getElementById('collAngle').value;
-  const W=cv.width, H=cv.height;
-  const cx=W/2, cy=H/2;
-  const spread=(2*Math.PI)/n;
-
-  bodies=[];
-  for(let i=0;i<n;i++){
-    const m   = +document.getElementById('m'+i).value   || 1;
-    const v   = +document.getElementById('v'+i).value   || 0;
-    const dirDeg = +document.getElementById('dir'+i).value || 0;
-    const mu  = +document.getElementById('mu'+i).value  || 0.1;
-    const dist= +document.getElementById('dist'+i).value|| 150;
-
-    // FIX #10 & #11: use actual user direction, not body position angle
-    const vAngle  = (dirDeg * Math.PI/180);          // real velocity direction
-    const posAngle= spread*i + (baseAngleDeg*Math.PI/180) + Math.PI; // start from opposite side
-
-    const sx = cx + Math.cos(posAngle)*dist;
-    const sy = cy + Math.sin(posAngle)*dist;
-
-    const vx = v * Math.cos(vAngle);
-    const vy = v * Math.sin(vAngle);
-
-    // Safety check #12
-    if(!isFinite(sx)||!isFinite(sy)||!isFinite(vx)||!isFinite(vy)) continue;
-
-    bodies.push({
-      id:i, m, mu,
-      x:sx, y:sy, vx, vy,
-      ox:sx, oy:sy,
-      r: Math.max(12, Math.min(26, m*3.2)),
-      col:COLORS[i].c,
-      trail:[], hasStopped:false, stopT:null,
-      // Post-collision tracking
-      collX:null, collY:null,     // position at moment of collision
-      collVx:null, collVy:null,   // velocity right after collision
-      collT:null,                 // simulation time at collision
-      postCollDist:0,             // distance traveled after collision (px)
-      hadCollision:false,
-    });
-  }
-}
-
-// ── START ────────────────────────────────────────
-function startSim(){
-  if(raf) cancelAnimationFrame(raf);
-  running=true; paused=false;
-  simTime=0; collCount=0; shakeAmt=0;
-  parts=[]; chartP=[]; chartV=[]; chartEk=[];
-  initEk=null; lastTs=null; fpsArr=[];                // FIX #4
-  document.getElementById('collN').textContent='0';
-  document.getElementById('btnPause').textContent='⏸ PAUSE';
-
-  buildBodies();
-  if(bodies.length===0){ notify('⚠ Nuk ka trupa!'); return; }
-
-  const e=+document.getElementById('eSlider').value;
-  window._e=e;
-  document.getElementById('eDisp').textContent=e.toFixed(2);
-
-  // Initial momentum
-  let px=0,py=0;
-  for(const b of bodies){ px+=b.m*b.vx; py+=b.m*b.vy; }
-  initP=Math.sqrt(px*px+py*py);
-  if(!isFinite(initP)) initP=0;
-  document.getElementById('pInit').textContent=initP.toFixed(3)+' kg·m/s';
-
-  genAnalysis('start');
-  // pre-fill analysis panels immediately
-  initEk = totalEk();
-  _updateBodyAnaTable();
-  _updateEnergyBreakdown();
-  notify('▶ Simulimi filloi! [Space=pause, R=reset]');
-  raf=requestAnimationFrame(loop);
-}
-
-let _frameCount=0;
-// ── MAIN LOOP ────────────────────────────────────
-function loop(ts){
-  if(!running){ return; }
-
-  const rawDt = lastTs ? (ts-lastTs)/1000 : 0.016;
-  lastTs=ts;
-
-  // FPS — FIX #5
-  const fps = rawDt>0 ? 1/rawDt : 60;
-  fpsArr.push(fps);
-  if(fpsArr.length>40) fpsArr.shift();
-  const avgFps = fpsArr.length
-    ? Math.round(fpsArr.reduce((a,b)=>a+b,0)/fpsArr.length)
-    : 60;
-  document.getElementById('fpsHud').textContent=avgFps+' FPS';
-
-  if(!paused){
-    const dt=Math.min(rawDt,0.05)*simSpeed;
-    simTime+=dt;
-    _frameCount++;
-    physicsStep(dt);
-    updateParticles(dt);
-    collectCharts();
-    updateRightPanel(_frameCount);
-  }
-
-  renderFrame();
-  document.getElementById('timeHud').textContent='T: '+simTime.toFixed(2)+' s';
-  raf=requestAnimationFrame(loop);
-}
-
-// ── PHYSICS STEP ─────────────────────────────────
-function physicsStep(dt){
-  // Move bodies
-  for(const b of bodies){
-    const spd=Math.sqrt(b.vx*b.vx+b.vy*b.vy);
-    if(!isFinite(spd)||spd<0.005){
-      b.vx=0; b.vy=0;
-      if(!b.hasStopped){ b.hasStopped=true; b.stopT=simTime; }
-      continue;
-    }
-    const a=b.mu*G;
-    const fac=Math.max(0,1-(a/spd)*dt);
-    b.vx*=fac; b.vy*=fac;
-    const prevX=b.x, prevY=b.y;
-    b.x+=b.vx*dt*55;
-    b.y+=b.vy*dt*55;
-    // Accumulate post-collision distance
-    if(b.hadCollision){
-      const step=Math.sqrt((b.x-prevX)**2+(b.y-prevY)**2);
-      b.postCollDist+=step;
+      }
+      document.getElementById('bodyForms').innerHTML = h;
     }
 
-    if(!isFinite(b.x)||!isFinite(b.y)){ b.x=cv.width/2; b.y=cv.height/2; } // safety
+    // ── BUILD BODIES ─────────────────────────────────
+    function buildBodies() {
+      const n = +document.getElementById('bodyCount').value;
+      const baseAngleDeg = +document.getElementById('collAngle').value;
+      const W = cv.width, H = cv.height;
+      const cx = W / 2, cy = H / 2;
+      const spread = (2 * Math.PI) / n;
 
-    if(showTrails){
-      b.trail.push({x:b.x,y:b.y,a:1});
-      if(b.trail.length>MAX_TRAIL) b.trail.shift();
-      for(const t of b.trail) t.a*=0.982;
+      bodies = [];
+      for (let i = 0; i < n; i++) {
+        const m = +document.getElementById('m' + i).value || 1;
+        const v = +document.getElementById('v' + i).value || 0;
+        const dirDeg = +document.getElementById('dir' + i).value || 0;
+        const mu = +document.getElementById('mu' + i).value || 0.1;
+        const dist = +document.getElementById('dist' + i).value || 150;
+
+        // FIX #10 & #11: use actual user direction, not body position angle
+        const vAngle = (dirDeg * Math.PI / 180);          // real velocity direction
+        const posAngle = spread * i + (baseAngleDeg * Math.PI / 180) + Math.PI; // start from opposite side
+
+        const sx = cx + Math.cos(posAngle) * dist;
+        const sy = cy + Math.sin(posAngle) * dist;
+
+        const vx = v * Math.cos(vAngle);
+        const vy = v * Math.sin(vAngle);
+
+        // Safety check #12
+        if (!isFinite(sx) || !isFinite(sy) || !isFinite(vx) || !isFinite(vy)) continue;
+
+        bodies.push({
+          id: i, m, mu,
+          x: sx, y: sy, vx, vy,
+          ox: sx, oy: sy,
+          r: Math.max(12, Math.min(26, m * 3.2)),
+          col: COLORS[i].c,
+          trail: [], hasStopped: false, stopT: null,
+          // Post-collision tracking
+          collX: null, collY: null,     // position at moment of collision
+          collVx: null, collVy: null,   // velocity right after collision
+          collT: null,                 // simulation time at collision
+          postCollDist: 0,             // distance traveled after collision (px)
+          hadCollision: false,
+        });
+      }
     }
-  }
 
-  // Collisions
-  const e=window._e||0.75;
-  for(let i=0;i<bodies.length;i++){
-    for(let j=i+1;j<bodies.length;j++){
-      const a=bodies[i], b=bodies[j];
-      const dx=b.x-a.x, dy=b.y-a.y;
-      const dist=Math.sqrt(dx*dx+dy*dy);
-      const minD=a.r+b.r;
+    // ── START ────────────────────────────────────────
+    function startSim() {
+      if (raf) cancelAnimationFrame(raf);
+      running = true; paused = false;
+      simTime = 0; collCount = 0; shakeAmt = 0;
+      parts = []; chartP = []; chartV = []; chartEk = [];
+      initEk = null; lastTs = null; fpsArr = [];                // FIX #4
+      document.getElementById('collN').textContent = '0';
+      document.getElementById('btnPause').textContent = '⏸ PAUSE';
 
-      // FIX #2: guard dist > 0
-      if(dist<minD && dist>0.0001){
-        const ov=(minD-dist)/2;
-        const nx=dx/dist, ny=dy/dist;
-        a.x-=nx*ov; a.y-=ny*ov;
-        b.x+=nx*ov; b.y+=ny*ov;
+      buildBodies();
+      if (bodies.length === 0) { notify('⚠ Nuk ka trupa!'); return; }
 
-        const dvx=b.vx-a.vx, dvy=b.vy-a.vy;
-        const dot=dvx*nx+dvy*ny;
-        if(dot<0){
-          const imp=-(1+e)*dot/(1/a.m+1/b.m);
-          if(!isFinite(imp)) continue;
-          const ix=imp*nx, iy=imp*ny;
-          a.vx-=ix/a.m; a.vy-=iy/a.m;
-          b.vx+=ix/b.m; b.vy+=iy/b.m;
+      const e = +document.getElementById('eSlider').value;
+      window._e = e;
+      document.getElementById('eDisp').textContent = e.toFixed(2);
 
-          // FIX #7: perfect inelastic — merge velocities
-          if(e===0){
-            const tm=a.m+b.m;
-            const mvx=(a.m*a.vx+b.m*b.vx)/tm;
-            const mvy=(a.m*a.vy+b.m*b.vy)/tm;
-            a.vx=b.vx=mvx; a.vy=b.vy=mvy;
-          }
+      // Initial momentum
+      let px = 0, py = 0;
+      for (const b of bodies) { px += b.m * b.vx; py += b.m * b.vy; }
+      initP = Math.sqrt(px * px + py * py);
+      if (!isFinite(initP)) initP = 0;
+      document.getElementById('pInit').textContent = initP.toFixed(3) + ' kg·m/s';
 
-          collCount++;
-          document.getElementById('collN').textContent=collCount;
-          spawnParts((a.x+b.x)/2,(a.y+b.y)/2,a.col,b.col);
-          trigFlash();
-          shakeAmt=7;
-          // Record post-collision state for both bodies
-          [a,b].forEach(bd=>{
-            bd.hadCollision=true;
-            bd.collX=bd.x; bd.collY=bd.y;
-            bd.collVx=bd.vx; bd.collVy=bd.vy;
-            bd.collT=simTime;
-            bd.postCollDist=0; // reset accumulator
-          });
-          genAnalysis('coll',a,b);
+      genAnalysis('start');
+      // pre-fill analysis panels immediately
+      initEk = totalEk();
+      _updateBodyAnaTable();
+      _updateEnergyBreakdown();
+      notify('▶ Simulimi filloi! [Space=pause, R=reset]');
+      raf = requestAnimationFrame(loop);
+    }
+
+    let _frameCount = 0;
+    // ── MAIN LOOP ────────────────────────────────────
+    function loop(ts) {
+      if (!running) { return; }
+
+      const rawDt = lastTs ? (ts - lastTs) / 1000 : 0.016;
+      lastTs = ts;
+
+      // FPS — FIX #5
+      const fps = rawDt > 0 ? 1 / rawDt : 60;
+      fpsArr.push(fps);
+      if (fpsArr.length > 40) fpsArr.shift();
+      const avgFps = fpsArr.length
+        ? Math.round(fpsArr.reduce((a, b) => a + b, 0) / fpsArr.length)
+        : 60;
+      document.getElementById('fpsHud').textContent = avgFps + ' FPS';
+
+      if (!paused) {
+        const dt = Math.min(rawDt, 0.05) * simSpeed;
+        simTime += dt;
+        _frameCount++;
+        physicsStep(dt);
+        updateParticles(dt);
+        collectCharts();
+        updateRightPanel(_frameCount);
+      }
+
+      renderFrame();
+      document.getElementById('timeHud').textContent = 'T: ' + simTime.toFixed(2) + ' s';
+      raf = requestAnimationFrame(loop);
+    }
+
+    // ── PHYSICS STEP ─────────────────────────────────
+    function physicsStep(dt) {
+      // Move bodies
+      for (const b of bodies) {
+        const spd = Math.sqrt(b.vx * b.vx + b.vy * b.vy);
+        if (!isFinite(spd) || spd < 0.005) {
+          b.vx = 0; b.vy = 0;
+          if (!b.hasStopped) { b.hasStopped = true; b.stopT = simTime; }
+          continue;
+        }
+        const a = b.mu * G;
+        const fac = Math.max(0, 1 - (a / spd) * dt);
+        b.vx *= fac; b.vy *= fac;
+        const prevX = b.x, prevY = b.y;
+        b.x += b.vx * dt * 55;
+        b.y += b.vy * dt * 55;
+        // Accumulate post-collision distance
+        if (b.hadCollision) {
+          const step = Math.sqrt((b.x - prevX) ** 2 + (b.y - prevY) ** 2);
+          b.postCollDist += step;
+        }
+
+        if (!isFinite(b.x) || !isFinite(b.y)) { b.x = cv.width / 2; b.y = cv.height / 2; } // safety
+
+        if (showTrails) {
+          b.trail.push({ x: b.x, y: b.y, a: 1 });
+          if (b.trail.length > MAX_TRAIL) b.trail.shift();
+          for (const t of b.trail) t.a *= 0.982;
         }
       }
+
+      // Collisions
+      const e = window._e || 0.75;
+      for (let i = 0; i < bodies.length; i++) {
+        for (let j = i + 1; j < bodies.length; j++) {
+          const a = bodies[i], b = bodies[j];
+          const dx = b.x - a.x, dy = b.y - a.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          const minD = a.r + b.r;
+
+          // FIX #2: guard dist > 0
+          if (dist < minD && dist > 0.0001) {
+            const ov = (minD - dist) / 2;
+            const nx = dx / dist, ny = dy / dist;
+            a.x -= nx * ov; a.y -= ny * ov;
+            b.x += nx * ov; b.y += ny * ov;
+
+            const dvx = b.vx - a.vx, dvy = b.vy - a.vy;
+            const dot = dvx * nx + dvy * ny;
+            if (dot < 0) {
+              const imp = -(1 + e) * dot / (1 / a.m + 1 / b.m);
+              if (!isFinite(imp)) continue;
+              const ix = imp * nx, iy = imp * ny;
+              a.vx -= ix / a.m; a.vy -= iy / a.m;
+              b.vx += ix / b.m; b.vy += iy / b.m;
+
+              // FIX #7: perfect inelastic — merge velocities
+              if (e === 0) {
+                const tm = a.m + b.m;
+                const mvx = (a.m * a.vx + b.m * b.vx) / tm;
+                const mvy = (a.m * a.vy + b.m * b.vy) / tm;
+                a.vx = b.vx = mvx; a.vy = b.vy = mvy;
+              }
+
+              collCount++;
+              document.getElementById('collN').textContent = collCount;
+              spawnParts((a.x + b.x) / 2, (a.y + b.y) / 2, a.col, b.col);
+              trigFlash();
+              shakeAmt = 7;
+              // Record post-collision state for both bodies
+              [a, b].forEach(bd => {
+                bd.hadCollision = true;
+                bd.collX = bd.x; bd.collY = bd.y;
+                bd.collVx = bd.vx; bd.collVy = bd.vy;
+                bd.collT = simTime;
+                bd.postCollDist = 0; // reset accumulator
+              });
+              genAnalysis('coll', a, b);
+            }
+          }
+        }
+      }
+      shakeAmt *= 0.87;
     }
-  }
-  shakeAmt*=0.87;
-}
 
-// ── PARTICLES ────────────────────────────────────
-function spawnParts(x,y,c1,c2){
-  const avail=MAX_PARTICLES-parts.length;
-  const n=Math.min(25,avail);
-  for(let i=0;i<n;i++){
-    const ang=Math.random()*Math.PI*2;
-    const sp=25+Math.random()*100;
-    parts.push({x,y,vx:Math.cos(ang)*sp,vy:Math.sin(ang)*sp,
-      col:Math.random()>.5?c1:c2,life:1,sz:1+Math.random()*3});
-  }
-}
-function updateParticles(dt){
-  for(let i=parts.length-1;i>=0;i--){
-    const p=parts[i];
-    p.x+=p.vx*dt; p.y+=p.vy*dt;
-    p.vx*=0.93; p.vy*=0.93;
-    p.life-=dt*1.4;
-    if(p.life<=0) parts.splice(i,1);
-  }
-}
-
-// ── RENDER ───────────────────────────────────────
-function renderFrame(){
-  const W=cv.width,H=cv.height;
-  const sx=shakeAmt>0.5?(Math.random()-.5)*shakeAmt:0;
-  const sy=shakeAmt>0.5?(Math.random()-.5)*shakeAmt:0;
-
-  ctx.save();
-  ctx.clearRect(0,0,W,H);
-  // BG gradient
-  const bg=ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,W*.65);
-  bg.addColorStop(0,'#030c1e'); bg.addColorStop(1,'#010810');
-  ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
-
-  ctx.translate(sx,sy);
-  ctx.save();
-  ctx.scale(zoomLvl,zoomLvl);
-  ctx.translate(panX/zoomLvl,panY/zoomLvl);
-
-  if(showGrid) drawGrid(W/zoomLvl,H/zoomLvl);
-  drawAxes(W/zoomLvl,H/zoomLvl);
-
-  // Trails
-  if(showTrails){
-    for(const b of bodies){
-      if(b.trail.length<2) continue;
-      for(let i=1;i<b.trail.length;i++){
-        const al=(i/b.trail.length)*b.trail[i].a*0.55;
-        ctx.strokeStyle=hex2rgba(b.col,al);
-        ctx.lineWidth=2; ctx.beginPath();
-        ctx.moveTo(b.trail[i-1].x,b.trail[i-1].y);
-        ctx.lineTo(b.trail[i].x,b.trail[i].y);
-        ctx.stroke();
+    // ── PARTICLES ────────────────────────────────────
+    function spawnParts(x, y, c1, c2) {
+      const avail = MAX_PARTICLES - parts.length;
+      const n = Math.min(25, avail);
+      for (let i = 0; i < n; i++) {
+        const ang = Math.random() * Math.PI * 2;
+        const sp = 25 + Math.random() * 100;
+        parts.push({
+          x, y, vx: Math.cos(ang) * sp, vy: Math.sin(ang) * sp,
+          col: Math.random() > .5 ? c1 : c2, life: 1, sz: 1 + Math.random() * 3
+        });
       }
     }
-  }
+    function updateParticles(dt) {
+      for (let i = parts.length - 1; i >= 0; i--) {
+        const p = parts[i];
+        p.x += p.vx * dt; p.y += p.vy * dt;
+        p.vx *= 0.93; p.vy *= 0.93;
+        p.life -= dt * 1.4;
+        if (p.life <= 0) parts.splice(i, 1);
+      }
+    }
 
-  // Particles
-  for(const p of parts){
-    ctx.save(); ctx.globalAlpha=Math.max(0,p.life);
-    ctx.fillStyle=p.col; ctx.shadowBlur=8; ctx.shadowColor=p.col;
-    ctx.beginPath(); ctx.arc(p.x,p.y,p.sz,0,Math.PI*2); ctx.fill();
-    ctx.restore();
-  }
+    // ── RENDER ───────────────────────────────────────
+    function renderFrame() {
+      const W = cv.width, H = cv.height;
+      const sx = shakeAmt > 0.5 ? (Math.random() - .5) * shakeAmt : 0;
+      const sy = shakeAmt > 0.5 ? (Math.random() - .5) * shakeAmt : 0;
 
-  // Bodies + vectors
-  for(const b of bodies){
-    drawBody(b);
-    if(showVectors) drawVector(b);
-  }
+      ctx.save();
+      ctx.clearRect(0, 0, W, H);
+      // BG gradient
+      const bg = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, W * .65);
+      bg.addColorStop(0, '#030c1e'); bg.addColorStop(1, '#010810');
+      ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
 
-  ctx.restore(); ctx.restore();
-}
+      ctx.translate(sx, sy);
+      ctx.save();
+      ctx.scale(zoomLvl, zoomLvl);
+      ctx.translate(panX / zoomLvl, panY / zoomLvl);
 
-function drawBody(b){
-  const {x,y,r,col}=b;
-  // Halo
-  const ha=ctx.createRadialGradient(x,y,0,x,y,r*2.8);
-  ha.addColorStop(0,hex2rgba(col,.22)); ha.addColorStop(1,'transparent');
-  ctx.fillStyle=ha; ctx.beginPath(); ctx.arc(x,y,r*2.8,0,Math.PI*2); ctx.fill();
-  // Sphere
-  const sg=ctx.createRadialGradient(x-r*.3,y-r*.3,0,x,y,r);
-  sg.addColorStop(0,colorLighten(col,.5));
-  sg.addColorStop(.55,col);
-  sg.addColorStop(1,colorDarken(col,.5));
-  ctx.fillStyle=sg; ctx.shadowBlur=20; ctx.shadowColor=col;
-  ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.fill();
-  // Highlight
-  ctx.fillStyle='rgba(255,255,255,0.25)'; ctx.shadowBlur=0;
-  ctx.beginPath(); ctx.arc(x-r*.27,y-r*.27,r*.2,0,Math.PI*2); ctx.fill();
-  // Ring
-  ctx.strokeStyle=col; ctx.lineWidth=1.5; ctx.shadowBlur=12; ctx.shadowColor=col;
-  ctx.beginPath(); ctx.arc(x,y,r,0,Math.PI*2); ctx.stroke(); ctx.shadowBlur=0;
-  // Label
-  ctx.fillStyle='#fff'; ctx.font='bold 10px monospace';
-  ctx.textAlign='center'; ctx.textBaseline='middle';
-  ctx.fillText('T'+(b.id+1),x,y);
-  // Speed below
-  const spd=Math.sqrt(b.vx*b.vx+b.vy*b.vy);
-  ctx.fillStyle=col; ctx.font='9px monospace';
-  ctx.fillText(spd.toFixed(1)+' m/s',x,y+r+13);
-}
+      if (showGrid) drawGrid(W / zoomLvl, H / zoomLvl);
+      drawAxes(W / zoomLvl, H / zoomLvl);
 
-function drawVector(b){
-  const spd=Math.sqrt(b.vx*b.vx+b.vy*b.vy);
-  if(spd<0.01) return;
-  const sc=20/Math.max(spd,.1);
-  const ex=b.x+b.vx*sc*spd, ey=b.y+b.vy*sc*spd;
-  ctx.strokeStyle=b.col; ctx.lineWidth=2; ctx.shadowBlur=6; ctx.shadowColor=b.col;
-  ctx.beginPath(); ctx.moveTo(b.x,b.y); ctx.lineTo(ex,ey); ctx.stroke();
-  const ang=Math.atan2(ey-b.y,ex-b.x), al=9;
-  ctx.fillStyle=b.col;
-  ctx.beginPath();
-  ctx.moveTo(ex,ey);
-  ctx.lineTo(ex-al*Math.cos(ang-.4),ey-al*Math.sin(ang-.4));
-  ctx.lineTo(ex-al*Math.cos(ang+.4),ey-al*Math.sin(ang+.4));
-  ctx.closePath(); ctx.fill(); ctx.shadowBlur=0;
-  const p=b.m*spd;
-  if(!isFinite(p)) return;
-  ctx.fillStyle=b.col; ctx.font='9px monospace'; ctx.textAlign='left';
-  ctx.fillText('p='+p.toFixed(2),ex+5,ey-4);
-}
+      // Trails
+      if (showTrails) {
+        for (const b of bodies) {
+          if (b.trail.length < 2) continue;
+          for (let i = 1; i < b.trail.length; i++) {
+            const al = (i / b.trail.length) * b.trail[i].a * 0.55;
+            ctx.strokeStyle = hex2rgba(b.col, al);
+            ctx.lineWidth = 2; ctx.beginPath();
+            ctx.moveTo(b.trail[i - 1].x, b.trail[i - 1].y);
+            ctx.lineTo(b.trail[i].x, b.trail[i].y);
+            ctx.stroke();
+          }
+        }
+      }
 
-function drawAxes(W,H){
-  const cx2=W/2,cy2=H/2;
-  ctx.strokeStyle='rgba(0,220,255,0.2)'; ctx.lineWidth=1; ctx.setLineDash([]);
-  ctx.beginPath(); ctx.moveTo(0,cy2); ctx.lineTo(W,cy2); ctx.stroke();
-  ctx.beginPath(); ctx.moveTo(cx2,0); ctx.lineTo(cx2,H); ctx.stroke();
-  ctx.strokeStyle='rgba(0,220,255,0.1)'; ctx.lineWidth=.5;
-  for(let x=0;x<W;x+=50){ ctx.beginPath(); ctx.moveTo(x,cy2-4); ctx.lineTo(x,cy2+4); ctx.stroke(); }
-  for(let y=0;y<H;y+=50){ ctx.beginPath(); ctx.moveTo(cx2-4,y); ctx.lineTo(cx2+4,y); ctx.stroke(); }
-  ctx.fillStyle='rgba(0,220,255,0.35)'; ctx.font='10px monospace'; ctx.textBaseline='middle';
-  ctx.textAlign='left';   ctx.fillText('+X',W-26,cy2-10);
-  ctx.textAlign='center'; ctx.fillText('+Y',cx2+10,14);
-  ctx.fillText('O',cx2+8,cy2-10);
-}
+      // Particles
+      for (const p of parts) {
+        ctx.save(); ctx.globalAlpha = Math.max(0, p.life);
+        ctx.fillStyle = p.col; ctx.shadowBlur = 8; ctx.shadowColor = p.col;
+        ctx.beginPath(); ctx.arc(p.x, p.y, p.sz, 0, Math.PI * 2); ctx.fill();
+        ctx.restore();
+      }
 
-function drawGrid(W,H){
-  ctx.strokeStyle='rgba(0,220,255,0.032)'; ctx.lineWidth=.5;
-  for(let x=0;x<W;x+=50){ ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,H); ctx.stroke(); }
-  for(let y=0;y<H;y+=50){ ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(W,y); ctx.stroke(); }
-}
+      // Bodies + vectors
+      for (const b of bodies) {
+        drawBody(b);
+        if (showVectors) drawVector(b);
+      }
 
-function drawIdle(){
-  resize();
-  const W=cv.width,H=cv.height,cx2=W/2,cy2=H/2;
-  ctx.clearRect(0,0,W,H);
-  const bg=ctx.createRadialGradient(W/2,H/2,0,W/2,H/2,W*.6);
-  bg.addColorStop(0,'#030c1e'); bg.addColorStop(1,'#010810');
-  ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
-  drawGrid(W,H); drawAxes(W,H);
-  // Deco rings
-  ctx.strokeStyle='rgba(0,220,255,0.06)'; ctx.lineWidth=1; ctx.setLineDash([6,12]);
-  [100,170,240].forEach(r=>{ ctx.beginPath(); ctx.arc(cx2,cy2,r,0,Math.PI*2); ctx.stroke(); });
-  ctx.setLineDash([]);
-  // Glow center
-  const g=ctx.createRadialGradient(cx2,cy2,0,cx2,cy2,45);
-  g.addColorStop(0,'rgba(0,220,255,0.3)'); g.addColorStop(1,'transparent');
-  ctx.fillStyle=g; ctx.beginPath(); ctx.arc(cx2,cy2,45,0,Math.PI*2); ctx.fill();
-  // Text
-  ctx.textAlign='center'; ctx.textBaseline='middle';
-  ctx.fillStyle='rgba(0,220,255,0.75)'; ctx.font='bold 15px monospace';
-  ctx.fillText('MOMENTUMX PHYSICS SIMULATOR',cx2,cy2-18);
-  ctx.fillStyle='rgba(0,220,255,0.3)'; ctx.font='11px monospace';
-  ctx.fillText('Vendos parametrat → Shtyp  ▶ STARTIM',cx2,cy2+10);
-  ctx.font='10px monospace'; ctx.fillStyle='rgba(0,220,255,0.15)';
-  ctx.fillText('Drag = lëviz  |  Scroll = zoom  |  Space = pause  |  R = reset',cx2,cy2+60);
-}
+      ctx.restore(); ctx.restore();
+    }
 
-// ── RIGHT PANEL ───────────────────────────────────
-function totalP(){
-  let px=0,py=0;
-  for(const b of bodies){ px+=b.m*b.vx; py+=b.m*b.vy; }
-  const p=Math.sqrt(px*px+py*py);
-  return isFinite(p)?p:0;
-}
-function totalEk(){
-  let e=0;
-  for(const b of bodies) e+=.5*b.m*(b.vx*b.vx+b.vy*b.vy);
-  return isFinite(e)?e:0;
-}
+    function drawBody(b) {
+      const { x, y, r, col } = b;
+      // Halo
+      const ha = ctx.createRadialGradient(x, y, 0, x, y, r * 2.8);
+      ha.addColorStop(0, hex2rgba(col, .22)); ha.addColorStop(1, 'transparent');
+      ctx.fillStyle = ha; ctx.beginPath(); ctx.arc(x, y, r * 2.8, 0, Math.PI * 2); ctx.fill();
+      // Sphere
+      const sg = ctx.createRadialGradient(x - r * .3, y - r * .3, 0, x, y, r);
+      sg.addColorStop(0, colorLighten(col, .5));
+      sg.addColorStop(.55, col);
+      sg.addColorStop(1, colorDarken(col, .5));
+      ctx.fillStyle = sg; ctx.shadowBlur = 20; ctx.shadowColor = col;
+      ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.fill();
+      // Highlight
+      ctx.fillStyle = 'rgba(255,255,255,0.25)'; ctx.shadowBlur = 0;
+      ctx.beginPath(); ctx.arc(x - r * .27, y - r * .27, r * .2, 0, Math.PI * 2); ctx.fill();
+      // Ring
+      ctx.strokeStyle = col; ctx.lineWidth = 1.5; ctx.shadowBlur = 12; ctx.shadowColor = col;
+      ctx.beginPath(); ctx.arc(x, y, r, 0, Math.PI * 2); ctx.stroke(); ctx.shadowBlur = 0;
+      // Label
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 10px monospace';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('T' + (b.id + 1), x, y);
+      // Speed below
+      const spd = Math.sqrt(b.vx * b.vx + b.vy * b.vy);
+      ctx.fillStyle = col; ctx.font = '9px monospace';
+      ctx.fillText(spd.toFixed(1) + ' m/s', x, y + r + 13);
+    }
 
-function updateRightPanel(frame){
-  const p=totalP(), ek=totalEk();
-  if(initEk===null && ek>0) initEk=ek;
-  const lost=Math.max(0,(initEk||ek)-ek);
+    function drawVector(b) {
+      const spd = Math.sqrt(b.vx * b.vx + b.vy * b.vy);
+      if (spd < 0.01) return;
+      const sc = 20 / Math.max(spd, .1);
+      const ex = b.x + b.vx * sc * spd, ey = b.y + b.vy * sc * spd;
+      ctx.strokeStyle = b.col; ctx.lineWidth = 2; ctx.shadowBlur = 6; ctx.shadowColor = b.col;
+      ctx.beginPath(); ctx.moveTo(b.x, b.y); ctx.lineTo(ex, ey); ctx.stroke();
+      const ang = Math.atan2(ey - b.y, ex - b.x), al = 9;
+      ctx.fillStyle = b.col;
+      ctx.beginPath();
+      ctx.moveTo(ex, ey);
+      ctx.lineTo(ex - al * Math.cos(ang - .4), ey - al * Math.sin(ang - .4));
+      ctx.lineTo(ex - al * Math.cos(ang + .4), ey - al * Math.sin(ang + .4));
+      ctx.closePath(); ctx.fill(); ctx.shadowBlur = 0;
+      const p = b.m * spd;
+      if (!isFinite(p)) return;
+      ctx.fillStyle = b.col; ctx.font = '9px monospace'; ctx.textAlign = 'left';
+      ctx.fillText('p=' + p.toFixed(2), ex + 5, ey - 4);
+    }
 
-  document.getElementById('pCur').textContent =p.toFixed(3)+' kg·m/s';
-  document.getElementById('ekTot').textContent=ek.toFixed(3)+' J';
-  document.getElementById('eLost').textContent=lost.toFixed(3)+' J';
-  document.getElementById('simDur').textContent=simTime.toFixed(2)+' s';
+    function drawAxes(W, H) {
+      const cx2 = W / 2, cy2 = H / 2;
+      ctx.strokeStyle = 'rgba(0,220,255,0.2)'; ctx.lineWidth = 1; ctx.setLineDash([]);
+      ctx.beginPath(); ctx.moveTo(0, cy2); ctx.lineTo(W, cy2); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(cx2, 0); ctx.lineTo(cx2, H); ctx.stroke();
+      ctx.strokeStyle = 'rgba(0,220,255,0.1)'; ctx.lineWidth = .5;
+      for (let x = 0; x < W; x += 50) { ctx.beginPath(); ctx.moveTo(x, cy2 - 4); ctx.lineTo(x, cy2 + 4); ctx.stroke(); }
+      for (let y = 0; y < H; y += 50) { ctx.beginPath(); ctx.moveTo(cx2 - 4, y); ctx.lineTo(cx2 + 4, y); ctx.stroke(); }
+      ctx.fillStyle = 'rgba(0,220,255,0.35)'; ctx.font = '10px monospace'; ctx.textBaseline = 'middle';
+      ctx.textAlign = 'left'; ctx.fillText('+X', W - 26, cy2 - 10);
+      ctx.textAlign = 'center'; ctx.fillText('+Y', cx2 + 10, 14);
+      ctx.fillText('O', cx2 + 8, cy2 - 10);
+    }
 
-  // Body table
-  let tHtml='';
-  for(const b of bodies){
-    const spd=Math.sqrt(b.vx*b.vx+b.vy*b.vy);
-    const pb=isFinite(b.m*spd)?b.m*spd:0;
-    const ekb=isFinite(.5*b.m*spd*spd)?.5*b.m*spd*spd:0;
-    tHtml+=`<tr>
-      <td style="color:${b.col}">T${b.id+1}</td>
+    function drawGrid(W, H) {
+      ctx.strokeStyle = 'rgba(0,220,255,0.032)'; ctx.lineWidth = .5;
+      for (let x = 0; x < W; x += 50) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke(); }
+      for (let y = 0; y < H; y += 50) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke(); }
+    }
+
+    function drawIdle() {
+      resize();
+      const W = cv.width, H = cv.height, cx2 = W / 2, cy2 = H / 2;
+      ctx.clearRect(0, 0, W, H);
+      const bg = ctx.createRadialGradient(W / 2, H / 2, 0, W / 2, H / 2, W * .6);
+      bg.addColorStop(0, '#030c1e'); bg.addColorStop(1, '#010810');
+      ctx.fillStyle = bg; ctx.fillRect(0, 0, W, H);
+      drawGrid(W, H); drawAxes(W, H);
+      // Deco rings
+      ctx.strokeStyle = 'rgba(0,220,255,0.06)'; ctx.lineWidth = 1; ctx.setLineDash([6, 12]);
+      [100, 170, 240].forEach(r => { ctx.beginPath(); ctx.arc(cx2, cy2, r, 0, Math.PI * 2); ctx.stroke(); });
+      ctx.setLineDash([]);
+      // Glow center
+      const g = ctx.createRadialGradient(cx2, cy2, 0, cx2, cy2, 45);
+      g.addColorStop(0, 'rgba(0,220,255,0.3)'); g.addColorStop(1, 'transparent');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx2, cy2, 45, 0, Math.PI * 2); ctx.fill();
+      // Text
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillStyle = 'rgba(0,220,255,0.75)'; ctx.font = 'bold 15px monospace';
+      ctx.fillText('MOMENTUMX PHYSICS SIMULATOR', cx2, cy2 - 18);
+      ctx.fillStyle = 'rgba(0,220,255,0.3)'; ctx.font = '11px monospace';
+      ctx.fillText('Vendos parametrat → Shtyp  ▶ STARTIM', cx2, cy2 + 10);
+      ctx.font = '10px monospace'; ctx.fillStyle = 'rgba(0,220,255,0.15)';
+      ctx.fillText('Drag = lëviz  |  Scroll = zoom  |  Space = pause  |  R = reset', cx2, cy2 + 60);
+    }
+
+    // ── RIGHT PANEL ───────────────────────────────────
+    function totalP() {
+      let px = 0, py = 0;
+      for (const b of bodies) { px += b.m * b.vx; py += b.m * b.vy; }
+      const p = Math.sqrt(px * px + py * py);
+      return isFinite(p) ? p : 0;
+    }
+    function totalEk() {
+      let e = 0;
+      for (const b of bodies) e += .5 * b.m * (b.vx * b.vx + b.vy * b.vy);
+      return isFinite(e) ? e : 0;
+    }
+
+    function updateRightPanel(frame) {
+      const p = totalP(), ek = totalEk();
+      if (initEk === null && ek > 0) initEk = ek;
+      const lost = Math.max(0, (initEk || ek) - ek);
+
+      document.getElementById('pCur').textContent = p.toFixed(3) + ' kg·m/s';
+      document.getElementById('ekTot').textContent = ek.toFixed(3) + ' J';
+      document.getElementById('eLost').textContent = lost.toFixed(3) + ' J';
+      document.getElementById('simDur').textContent = simTime.toFixed(2) + ' s';
+
+      // Body table
+      let tHtml = '';
+      for (const b of bodies) {
+        const spd = Math.sqrt(b.vx * b.vx + b.vy * b.vy);
+        const pb = isFinite(b.m * spd) ? b.m * spd : 0;
+        const ekb = isFinite(.5 * b.m * spd * spd) ? .5 * b.m * spd * spd : 0;
+        tHtml += `<tr>
+      <td style="color:${b.col}">T${b.id + 1}</td>
       <td>${spd.toFixed(2)}</td>
       <td>${pb.toFixed(2)}</td>
       <td>${ekb.toFixed(2)}</td>
     </tr>`;
-  }
-  document.getElementById('bodyTbl').innerHTML=tHtml;
+      }
+      document.getElementById('bodyTbl').innerHTML = tHtml;
 
-  // Stop data — update every 10 frames to keep render loop fast
-  if(!frame || frame%10===0){
-  let sdHtml=`
+      // Stop data — update every 10 frames to keep render loop fast
+      if (!frame || frame % 10 === 0) {
+        let sdHtml = `
   <div style="display:grid;gap:8px;">`;
-  for(const b of bodies){
-    const spd=Math.sqrt(b.vx*b.vx+b.vy*b.vy);
-    const a_dec=b.mu*G;
-    // Current stop time/dist from NOW
-    const tStop=a_dec>0?spd/a_dec:0;
-    const sDist=Math.max(0,spd*tStop-.5*a_dec*tStop*tStop)*55; // px
-    // Post-collision metrics
-    let postCollHtml='';
-    if(b.hadCollision && b.collVx!==null){
-      const collSpd=Math.sqrt(b.collVx**2+b.collVy**2);
-      const tStopPost=a_dec>0?collSpd/a_dec:0;
-      const sStopPost=Math.max(0,collSpd*tStopPost-.5*a_dec*tStopPost**2)*55; // px
-      const pcd=(b.postCollDist).toFixed(0);
-      const elapsedSinceCollision=(simTime-b.collT).toFixed(2);
-      const collEk=(.5*b.m*collSpd**2).toFixed(3);
-      postCollHtml=`
+        for (const b of bodies) {
+          const spd = Math.sqrt(b.vx * b.vx + b.vy * b.vy);
+          const a_dec = b.mu * G;
+          // Current stop time/dist from NOW
+          const tStop = a_dec > 0 ? spd / a_dec : 0;
+          const sDist = Math.max(0, spd * tStop - .5 * a_dec * tStop * tStop) * 55; // px
+          // Post-collision metrics
+          let postCollHtml = '';
+          if (b.hadCollision && b.collVx !== null) {
+            const collSpd = Math.sqrt(b.collVx ** 2 + b.collVy ** 2);
+            const tStopPost = a_dec > 0 ? collSpd / a_dec : 0;
+            const sStopPost = Math.max(0, collSpd * tStopPost - .5 * a_dec * tStopPost ** 2) * 55; // px
+            const pcd = (b.postCollDist).toFixed(0);
+            const elapsedSinceCollision = (simTime - b.collT).toFixed(2);
+            const collEk = (.5 * b.m * collSpd ** 2).toFixed(3);
+            postCollHtml = `
         <div style="margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.07);">
           <div style="font-size:9px;letter-spacing:1px;color:var(--txt3);margin-bottom:4px;text-transform:uppercase;">📍 Pas Përplasjes</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;">
@@ -1085,15 +1742,15 @@ function updateRightPanel(frame){
             <div style="font-size:10px;font-family:monospace;color:var(--txt2);">${elapsedSinceCollision} s</div>
           </div>
         </div>`;
-    } else if(!b.hadCollision){
-      postCollHtml=`<div style="margin-top:5px;font-size:9px;color:var(--txt3);font-style:italic;">— nuk ka patur përplasje ende —</div>`;
-    }
-    sdHtml+=`
+          } else if (!b.hadCollision) {
+            postCollHtml = `<div style="margin-top:5px;font-size:9px;color:var(--txt3);font-style:italic;">— nuk ka patur përplasje ende —</div>`;
+          }
+          sdHtml += `
     <div style="border-radius:9px;background:rgba(0,10,24,0.6);border:1px solid ${b.col}22;padding:9px 11px;overflow:hidden;">
       <div style="display:flex;align-items:center;gap:7px;margin-bottom:7px;">
         <div style="width:9px;height:9px;border-radius:50%;background:${b.col};box-shadow:0 0 7px ${b.col};flex-shrink:0;"></div>
-        <span style="font-size:11px;font-weight:800;color:${b.col};letter-spacing:1px;">TRUPI ${b.id+1}</span>
-        ${b.hasStopped?'<span style="font-size:8px;padding:1px 6px;border-radius:8px;background:rgba(255,32,128,0.15);border:1px solid rgba(255,32,128,0.3);color:#ff2080;margin-left:auto;">NDALUR</span>':'<span style="font-size:8px;padding:1px 6px;border-radius:8px;background:rgba(0,255,153,0.1);border:1px solid rgba(0,255,153,0.25);color:#00ff99;margin-left:auto;">LËVIZ</span>'}
+        <span style="font-size:11px;font-weight:800;color:${b.col};letter-spacing:1px;">TRUPI ${b.id + 1}</span>
+        ${b.hasStopped ? '<span style="font-size:8px;padding:1px 6px;border-radius:8px;background:rgba(255,32,128,0.15);border:1px solid rgba(255,32,128,0.3);color:#ff2080;margin-left:auto;">NDALUR</span>' : '<span style="font-size:8px;padding:1px 6px;border-radius:8px;background:rgba(0,255,153,0.1);border:1px solid rgba(0,255,153,0.25);color:#00ff99;margin-left:auto;">LËVIZ</span>'}
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;">
         <div style="font-size:9px;color:var(--txt2);">|v| aktuale</div>
@@ -1102,12 +1759,12 @@ function updateRightPanel(frame){
         <div style="font-size:10px;font-family:monospace;color:#00ff99;font-weight:700;">${tStop.toFixed(2)} s</div>
         <div style="font-size:9px;color:var(--txt2);">s_ndalim (nga tani)</div>
         <div style="font-size:10px;font-family:monospace;color:#ff7700;font-weight:700;">${sDist.toFixed(0)} px</div>
-        ${b.stopT!==null?`<div style="font-size:9px;color:var(--txt2);">ndalur në t=</div><div style="font-size:10px;font-family:monospace;color:#ff2080;">${b.stopT.toFixed(2)} s</div>`:''}
+        ${b.stopT !== null ? `<div style="font-size:9px;color:var(--txt2);">ndalur në t=</div><div style="font-size:10px;font-family:monospace;color:#ff2080;">${b.stopT.toFixed(2)} s</div>` : ''}
       </div>
       ${postCollHtml}
     </div>`;
-  }
-  sdHtml+=`</div>
+        }
+        sdHtml += `</div>
   <!-- LEGEND -->
   <div style="margin-top:10px;padding:9px 11px;border-radius:9px;background:rgba(0,220,255,0.03);border:1px solid rgba(0,220,255,0.1);">
     <div style="font-size:9px;font-weight:700;letter-spacing:2px;color:var(--cyan);margin-bottom:7px;text-transform:uppercase;display:flex;align-items:center;gap:5px;">
@@ -1123,141 +1780,141 @@ function updateRightPanel(frame){
       <span style="color:var(--txt2);font-family:monospace;">Formula:</span><span style="color:var(--txt3);">t = v/a · s = v²/(2a) · a = μ·g</span>
     </div>
   </div>`;
-  document.getElementById('stopData').innerHTML=sdHtml;
-  } // end frame throttle
-}
-
-// ── CHARTS ───────────────────────────────────────
-function collectCharts(){
-  chartP.push(totalP());
-  chartV.push(Math.max(0,...bodies.map(b=>Math.sqrt(b.vx*b.vx+b.vy*b.vy))));
-  chartEk.push(totalEk());
-  if(chartP.length>400){ chartP.shift(); chartV.shift(); chartEk.shift(); }
-  miniChart('ch1',chartP,'#00dcff','kg·m/s');
-  miniChart('ch2',chartV,'#ff2080','m/s');
-  miniChart('ch3',chartEk,'#ffdd00','J');
-  // Mirror in analysis tab
-  miniChart('ch1b',chartP,'#00dcff','kg·m/s');
-  miniChart('ch2b',chartV,'#ff2080','m/s');
-  miniChart('ch3b',chartEk,'#ffdd00','J');
-  // Update labels
-  const setLbl=(id,data,unit)=>{
-    const el=document.getElementById(id);
-    if(el&&data.length) el.textContent=data[data.length-1].toFixed(3)+' '+unit;
-  };
-  setLbl('ch1b-lbl',chartP,'kg·m/s');
-  setLbl('ch2b-lbl',chartV,'m/s');
-  setLbl('ch3b-lbl',chartEk,'J');
-  // Also refresh analysis sub-sections every ~30 frames
-  if(chartP.length%30===0){ _updateBodyAnaTable(); _updateEnergyBreakdown(); }
-}
-
-// FIX #9: corrected drawMiniChart logic
-function miniChart(id,data,color,unit){
-  const el=document.getElementById(id);
-  if(!el) return;
-  const ct=el.getContext('2d');
-  const W=el.parentElement.clientWidth||200;
-  const H=el.parentElement.clientHeight||72;
-  el.width=W; el.height=H;
-  ct.clearRect(0,0,W,H);
-  if(data.length<2) return;
-
-  const mx=Math.max(...data)||1;
-  const mn=Math.min(...data);
-  const range=mx-mn||1;
-
-  function yOf(v){ return H-((v-mn)/range)*H*.78-H*.10; }
-
-  // Grid lines
-  ct.strokeStyle='rgba(255,255,255,0.04)'; ct.lineWidth=.5;
-  [0.25,0.5,0.75].forEach(f=>{
-    const y=H-f*H*.78-H*.10;
-    ct.beginPath(); ct.moveTo(0,y); ct.lineTo(W,y); ct.stroke();
-  });
-
-  // Fill
-  const gr=ct.createLinearGradient(0,0,0,H);
-  gr.addColorStop(0,hex2rgba(color,.28)); gr.addColorStop(1,'transparent');
-  ct.beginPath();
-  ct.moveTo(0,H);
-  for(let i=0;i<data.length;i++){
-    const x=(i/(data.length-1))*W;
-    const y=yOf(data[i]);
-    if(i===0){ ct.lineTo(x,H); ct.lineTo(x,y); } else { ct.lineTo(x,y); }
-  }
-  ct.lineTo(W,H);
-  ct.closePath();
-  ct.fillStyle=gr; ct.fill();
-
-  // Line
-  ct.beginPath();
-  for(let i=0;i<data.length;i++){
-    const x=(i/(data.length-1))*W;
-    const y=yOf(data[i]);
-    i===0 ? ct.moveTo(x,y) : ct.lineTo(x,y);
-  }
-  ct.strokeStyle=color; ct.lineWidth=1.5; ct.shadowBlur=7; ct.shadowColor=color;
-  ct.stroke(); ct.shadowBlur=0;
-
-  // Axis labels
-  const u=unit||'';
-  ct.font='8px monospace'; ct.textAlign='left'; ct.fillStyle='rgba(255,255,255,0.25)';
-  ct.fillText(mx.toFixed(2)+' '+u, 3, 10);
-  ct.fillText(mn.toFixed(2)+' '+u, 3, H-3);
-
-  // Current value highlight
-  ct.fillStyle=color; ct.font='bold 10px monospace'; ct.textAlign='right';
-  ct.fillText(data[data.length-1].toFixed(3)+' '+(u||''), W-3, 12);
-}
-
-// ── ANALYSIS ─────────────────────────────────────
-// Updates ALL three analysis sub-sections: per-body table, energy breakdown, narrative
-function genAnalysis(phase, b1, b2){
-  const e = window._e || .75;
-  _updateBodyAnaTable();
-  _updateEnergyBreakdown();
-  _updateNarrative(phase, e, b1, b2);
-}
-
-function _updateBodyAnaTable(){
-  const el = document.getElementById('bodyAnaTbl');
-  if(!el || bodies.length===0){ return; }
-
-  const SCALE = 55; // px → m conversion factor used in physics step (vx*dt*55)
-  let rows = '';
-  for(const b of bodies){
-    const spd  = Math.sqrt(b.vx*b.vx + b.vy*b.vy);
-    const p    = isFinite(b.m*spd) ? b.m*spd : 0;
-    const ek   = isFinite(.5*b.m*spd*spd) ? .5*b.m*spd*spd : 0;
-    const Ff   = b.mu * b.m * G;                         // [N]
-    const a_dec= b.mu * G;                               // [m/s²]
-    const tStop= a_dec>0 ? spd/a_dec : 0;                // [s]
-    const sDist= Math.max(0, spd*tStop - .5*a_dec*tStop*tStop); // [m] theoretical
-    // Travelled distance from origin (visual pixels → m)
-    const dx = b.x - b.ox, dy = b.y - b.oy;
-    const dTrav = Math.sqrt(dx*dx+dy*dy) / SCALE;        // [m]
-    // Direction angle
-    const dirDeg = spd>0.01 ? (Math.atan2(b.vy,b.vx)*180/Math.PI).toFixed(1) : '—';
-    // Time since start
-    const tElapsed = simTime.toFixed(2);
-    // Collision time (time from start to first detected stop, approximated)
-    const collT = b.stopT !== null ? b.stopT.toFixed(2) : '—';
-    // Post-collision data
-    let vCollStr='—', tStopPostStr='—', sStopPostStr='—', dPostStr='—', ekCollStr='—';
-    if(b.hadCollision && b.collVx!==null){
-      const collSpd=Math.sqrt(b.collVx**2+b.collVy**2);
-      const tStopP=a_dec>0?collSpd/a_dec:0;
-      const sStopP=Math.max(0,collSpd*tStopP-.5*a_dec*tStopP**2)*SCALE;
-      vCollStr=collSpd.toFixed(3)+' m/s';
-      tStopPostStr=tStopP.toFixed(3)+' s';
-      sStopPostStr=sStopP.toFixed(1)+' px';
-      dPostStr=b.postCollDist.toFixed(1)+' px';
-      ekCollStr=(.5*b.m*collSpd**2).toFixed(3)+' J';
+        document.getElementById('stopData').innerHTML = sdHtml;
+      } // end frame throttle
     }
 
-    rows += `<tr>
-      <td style="color:${b.col};font-weight:700">T${b.id+1}</td>
+    // ── CHARTS ───────────────────────────────────────
+    function collectCharts() {
+      chartP.push(totalP());
+      chartV.push(Math.max(0, ...bodies.map(b => Math.sqrt(b.vx * b.vx + b.vy * b.vy))));
+      chartEk.push(totalEk());
+      if (chartP.length > 400) { chartP.shift(); chartV.shift(); chartEk.shift(); }
+      miniChart('ch1', chartP, '#00dcff', 'kg·m/s');
+      miniChart('ch2', chartV, '#ff2080', 'm/s');
+      miniChart('ch3', chartEk, '#ffdd00', 'J');
+      // Mirror in analysis tab
+      miniChart('ch1b', chartP, '#00dcff', 'kg·m/s');
+      miniChart('ch2b', chartV, '#ff2080', 'm/s');
+      miniChart('ch3b', chartEk, '#ffdd00', 'J');
+      // Update labels
+      const setLbl = (id, data, unit) => {
+        const el = document.getElementById(id);
+        if (el && data.length) el.textContent = data[data.length - 1].toFixed(3) + ' ' + unit;
+      };
+      setLbl('ch1b-lbl', chartP, 'kg·m/s');
+      setLbl('ch2b-lbl', chartV, 'm/s');
+      setLbl('ch3b-lbl', chartEk, 'J');
+      // Also refresh analysis sub-sections every ~30 frames
+      if (chartP.length % 30 === 0) { _updateBodyAnaTable(); _updateEnergyBreakdown(); }
+    }
+
+    // FIX #9: corrected drawMiniChart logic
+    function miniChart(id, data, color, unit) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      const ct = el.getContext('2d');
+      const W = el.parentElement.clientWidth || 200;
+      const H = el.parentElement.clientHeight || 72;
+      el.width = W; el.height = H;
+      ct.clearRect(0, 0, W, H);
+      if (data.length < 2) return;
+
+      const mx = Math.max(...data) || 1;
+      const mn = Math.min(...data);
+      const range = mx - mn || 1;
+
+      function yOf(v) { return H - ((v - mn) / range) * H * .78 - H * .10; }
+
+      // Grid lines
+      ct.strokeStyle = 'rgba(255,255,255,0.04)'; ct.lineWidth = .5;
+      [0.25, 0.5, 0.75].forEach(f => {
+        const y = H - f * H * .78 - H * .10;
+        ct.beginPath(); ct.moveTo(0, y); ct.lineTo(W, y); ct.stroke();
+      });
+
+      // Fill
+      const gr = ct.createLinearGradient(0, 0, 0, H);
+      gr.addColorStop(0, hex2rgba(color, .28)); gr.addColorStop(1, 'transparent');
+      ct.beginPath();
+      ct.moveTo(0, H);
+      for (let i = 0; i < data.length; i++) {
+        const x = (i / (data.length - 1)) * W;
+        const y = yOf(data[i]);
+        if (i === 0) { ct.lineTo(x, H); ct.lineTo(x, y); } else { ct.lineTo(x, y); }
+      }
+      ct.lineTo(W, H);
+      ct.closePath();
+      ct.fillStyle = gr; ct.fill();
+
+      // Line
+      ct.beginPath();
+      for (let i = 0; i < data.length; i++) {
+        const x = (i / (data.length - 1)) * W;
+        const y = yOf(data[i]);
+        i === 0 ? ct.moveTo(x, y) : ct.lineTo(x, y);
+      }
+      ct.strokeStyle = color; ct.lineWidth = 1.5; ct.shadowBlur = 7; ct.shadowColor = color;
+      ct.stroke(); ct.shadowBlur = 0;
+
+      // Axis labels
+      const u = unit || '';
+      ct.font = '8px monospace'; ct.textAlign = 'left'; ct.fillStyle = 'rgba(255,255,255,0.25)';
+      ct.fillText(mx.toFixed(2) + ' ' + u, 3, 10);
+      ct.fillText(mn.toFixed(2) + ' ' + u, 3, H - 3);
+
+      // Current value highlight
+      ct.fillStyle = color; ct.font = 'bold 10px monospace'; ct.textAlign = 'right';
+      ct.fillText(data[data.length - 1].toFixed(3) + ' ' + (u || ''), W - 3, 12);
+    }
+
+    // ── ANALYSIS ─────────────────────────────────────
+    // Updates ALL three analysis sub-sections: per-body table, energy breakdown, narrative
+    function genAnalysis(phase, b1, b2) {
+      const e = window._e || .75;
+      _updateBodyAnaTable();
+      _updateEnergyBreakdown();
+      _updateNarrative(phase, e, b1, b2);
+    }
+
+    function _updateBodyAnaTable() {
+      const el = document.getElementById('bodyAnaTbl');
+      if (!el || bodies.length === 0) { return; }
+
+      const SCALE = 55; // px → m conversion factor used in physics step (vx*dt*55)
+      let rows = '';
+      for (const b of bodies) {
+        const spd = Math.sqrt(b.vx * b.vx + b.vy * b.vy);
+        const p = isFinite(b.m * spd) ? b.m * spd : 0;
+        const ek = isFinite(.5 * b.m * spd * spd) ? .5 * b.m * spd * spd : 0;
+        const Ff = b.mu * b.m * G;                         // [N]
+        const a_dec = b.mu * G;                               // [m/s²]
+        const tStop = a_dec > 0 ? spd / a_dec : 0;                // [s]
+        const sDist = Math.max(0, spd * tStop - .5 * a_dec * tStop * tStop); // [m] theoretical
+        // Travelled distance from origin (visual pixels → m)
+        const dx = b.x - b.ox, dy = b.y - b.oy;
+        const dTrav = Math.sqrt(dx * dx + dy * dy) / SCALE;        // [m]
+        // Direction angle
+        const dirDeg = spd > 0.01 ? (Math.atan2(b.vy, b.vx) * 180 / Math.PI).toFixed(1) : '—';
+        // Time since start
+        const tElapsed = simTime.toFixed(2);
+        // Collision time (time from start to first detected stop, approximated)
+        const collT = b.stopT !== null ? b.stopT.toFixed(2) : '—';
+        // Post-collision data
+        let vCollStr = '—', tStopPostStr = '—', sStopPostStr = '—', dPostStr = '—', ekCollStr = '—';
+        if (b.hadCollision && b.collVx !== null) {
+          const collSpd = Math.sqrt(b.collVx ** 2 + b.collVy ** 2);
+          const tStopP = a_dec > 0 ? collSpd / a_dec : 0;
+          const sStopP = Math.max(0, collSpd * tStopP - .5 * a_dec * tStopP ** 2) * SCALE;
+          vCollStr = collSpd.toFixed(3) + ' m/s';
+          tStopPostStr = tStopP.toFixed(3) + ' s';
+          sStopPostStr = sStopP.toFixed(1) + ' px';
+          dPostStr = b.postCollDist.toFixed(1) + ' px';
+          ekCollStr = (.5 * b.m * collSpd ** 2).toFixed(3) + ' J';
+        }
+
+        rows += `<tr>
+      <td style="color:${b.col};font-weight:700">T${b.id + 1}</td>
       <td>${b.m.toFixed(2)} kg</td>
       <td>${spd.toFixed(3)} m/s</td>
       <td>${dirDeg}°</td>
@@ -1276,9 +1933,9 @@ function _updateBodyAnaTable(){
       <td style="color:#ff7700;font-weight:700">${sStopPostStr}</td>
       <td style="color:#ff2080;font-weight:700">${dPostStr}</td>
     </tr>`;
-  }
+      }
 
-  el.innerHTML = `<table class="ana-tbl">
+      el.innerHTML = `<table class="ana-tbl">
     <thead><tr>
       <th>ID</th>
       <th>m [kg]</th>
@@ -1318,272 +1975,273 @@ function _updateBodyAnaTable(){
       <span style="color:#ff2080;font-family:monospace;">d_pas</span><span style="color:var(--txt3);">distanca reale e pershkruar pas perplasjes (px)</span>
     </div>
   </div>`;
-}
+    }
 
-function _updateEnergyBreakdown(){
-  const el = document.getElementById('energyBreakdown');
-  if(!el || bodies.length===0) return;
+    function _updateEnergyBreakdown() {
+      const el = document.getElementById('energyBreakdown');
+      if (!el || bodies.length === 0) return;
 
-  const ekNow   = totalEk();
-  const ekInit  = initEk || ekNow || 1;
-  const ekLost  = Math.max(0, ekInit - ekNow);
-  const ekFric  = ekLost; // energy lost = work done by friction
-  const pNow    = totalP();
+      const ekNow = totalEk();
+      const ekInit = initEk || ekNow || 1;
+      const ekLost = Math.max(0, ekInit - ekNow);
+      const ekFric = ekLost; // energy lost = work done by friction
+      const pNow = totalP();
 
-  let html = '';
+      let html = '';
 
-  // System totals with bars
-  const rows = [
-    {lbl:'E_k fillestare', val:ekInit,  color:'#00dcff', unit:'J'},
-    {lbl:'E_k aktuale',    val:ekNow,   color:'#00ff99', unit:'J'},
-    {lbl:'E_k e humbur',   val:ekLost,  color:'#ff2080', unit:'J'},
-    {lbl:'E_fërkimi (ΔE)', val:ekFric,  color:'#ff7700', unit:'J'},
-    {lbl:'p_total aktual', val:pNow,    color:'#ffdd00', unit:'kg·m/s'},
-    {lbl:'p_total fillestar', val:initP,color:'#00dcff', unit:'kg·m/s'},
-  ];
-  const maxVal = Math.max(...rows.map(r=>r.val), 0.001);
-  for(const r of rows){
-    const pct = Math.min(100, (r.val/maxVal)*100).toFixed(1);
-    html += `<div class="ebar-wrap">
+      // System totals with bars
+      const rows = [
+        { lbl: 'E_k fillestare', val: ekInit, color: '#00dcff', unit: 'J' },
+        { lbl: 'E_k aktuale', val: ekNow, color: '#00ff99', unit: 'J' },
+        { lbl: 'E_k e humbur', val: ekLost, color: '#ff2080', unit: 'J' },
+        { lbl: 'E_fërkimi (ΔE)', val: ekFric, color: '#ff7700', unit: 'J' },
+        { lbl: 'p_total aktual', val: pNow, color: '#ffdd00', unit: 'kg·m/s' },
+        { lbl: 'p_total fillestar', val: initP, color: '#00dcff', unit: 'kg·m/s' },
+      ];
+      const maxVal = Math.max(...rows.map(r => r.val), 0.001);
+      for (const r of rows) {
+        const pct = Math.min(100, (r.val / maxVal) * 100).toFixed(1);
+        html += `<div class="ebar-wrap">
       <span class="ebar-lbl">${r.lbl}</span>
       <div class="ebar"><div class="ebar-fill" style="width:${pct}%;background:${r.color};box-shadow:0 0 6px ${r.color}60;"></div></div>
-      <span class="ebar-val" style="color:${r.color}">${isFinite(r.val)?r.val.toFixed(3):'—'} ${r.unit}</span>
+      <span class="ebar-val" style="color:${r.color}">${isFinite(r.val) ? r.val.toFixed(3) : '—'} ${r.unit}</span>
     </div>`;
-  }
+      }
 
-  // Per-body energy breakdown
-  html += `<div style="margin-top:10px;margin-bottom:5px;font-size:9px;color:var(--txt2);letter-spacing:1px;text-transform:uppercase;">Energjia sipas trupit</div>`;
-  for(const b of bodies){
-    const spd = Math.sqrt(b.vx*b.vx+b.vy*b.vy);
-    const ek  = isFinite(.5*b.m*spd*spd) ? .5*b.m*spd*spd : 0;
-    const pct = Math.min(100, (ek / Math.max(ekInit,0.001))*100).toFixed(1);
-    // work done by friction on this body
-    const SCALE=55;
-    const dx=b.x-b.ox, dy=b.y-b.oy;
-    const dTrav=Math.sqrt(dx*dx+dy*dy)/SCALE;
-    const Wfric = b.mu*b.m*G*dTrav;
-    html += `<div class="ebar-wrap">
-      <span class="ebar-lbl" style="color:${b.col}">T${b.id+1} E_k</span>
+      // Per-body energy breakdown
+      html += `<div style="margin-top:10px;margin-bottom:5px;font-size:9px;color:var(--txt2);letter-spacing:1px;text-transform:uppercase;">Energjia sipas trupit</div>`;
+      for (const b of bodies) {
+        const spd = Math.sqrt(b.vx * b.vx + b.vy * b.vy);
+        const ek = isFinite(.5 * b.m * spd * spd) ? .5 * b.m * spd * spd : 0;
+        const pct = Math.min(100, (ek / Math.max(ekInit, 0.001)) * 100).toFixed(1);
+        // work done by friction on this body
+        const SCALE = 55;
+        const dx = b.x - b.ox, dy = b.y - b.oy;
+        const dTrav = Math.sqrt(dx * dx + dy * dy) / SCALE;
+        const Wfric = b.mu * b.m * G * dTrav;
+        html += `<div class="ebar-wrap">
+      <span class="ebar-lbl" style="color:${b.col}">T${b.id + 1} E_k</span>
       <div class="ebar"><div class="ebar-fill" style="width:${pct}%;background:${b.col};box-shadow:0 0 5px ${b.col}60;"></div></div>
       <span class="ebar-val" style="color:${b.col}">${ek.toFixed(3)} J</span>
     </div>
     <div class="ebar-wrap">
-      <span class="ebar-lbl" style="color:${b.col};opacity:.6">T${b.id+1} W_fërkimi</span>
-      <div class="ebar"><div class="ebar-fill" style="width:${Math.min(100,(Wfric/Math.max(ekInit,.001))*100).toFixed(1)}%;background:${b.col};opacity:.4;"></div></div>
+      <span class="ebar-lbl" style="color:${b.col};opacity:.6">T${b.id + 1} W_fërkimi</span>
+      <div class="ebar"><div class="ebar-fill" style="width:${Math.min(100, (Wfric / Math.max(ekInit, .001)) * 100).toFixed(1)}%;background:${b.col};opacity:.4;"></div></div>
       <span class="ebar-val" style="color:${b.col};opacity:.7">${Wfric.toFixed(3)} J</span>
     </div>`;
-  }
+      }
 
-  el.innerHTML = html;
-}
-
-function _updateNarrative(phase, e, b1, b2){
-  const el = document.getElementById('anaText');
-  if(!el) return;
-
-  if(phase==='start'){
-    let bodyLines='';
-    for(const b of bodies){
-      const spd0=Math.sqrt(b.vx*b.vx+b.vy*b.vy);
-      const ek0=.5*b.m*spd0*spd0;
-      const p0=b.m*spd0;
-      bodyLines+=`<br><b style="color:${b.col}">T${b.id+1}</b>: m=<b>${b.m} kg</b>, v₀=<b>${spd0.toFixed(2)} m/s</b>, p₀=<b>${p0.toFixed(3)} kg·m/s</b>, E_k₀=<b>${ek0.toFixed(3)} J</b>, μ=<b>${b.mu}</b>`;
+      el.innerHTML = html;
     }
-    el.innerHTML=`<b>Sistemi u inicializua</b> me <b>${bodies.length} trupa</b>.${bodyLines}<br><br>
+
+    function _updateNarrative(phase, e, b1, b2) {
+      const el = document.getElementById('anaText');
+      if (!el) return;
+
+      if (phase === 'start') {
+        let bodyLines = '';
+        for (const b of bodies) {
+          const spd0 = Math.sqrt(b.vx * b.vx + b.vy * b.vy);
+          const ek0 = .5 * b.m * spd0 * spd0;
+          const p0 = b.m * spd0;
+          bodyLines += `<br><b style="color:${b.col}">T${b.id + 1}</b>: m=<b>${b.m} kg</b>, v₀=<b>${spd0.toFixed(2)} m/s</b>, p₀=<b>${p0.toFixed(3)} kg·m/s</b>, E_k₀=<b>${ek0.toFixed(3)} J</b>, μ=<b>${b.mu}</b>`;
+        }
+        el.innerHTML = `<b>Sistemi u inicializua</b> me <b>${bodies.length} trupa</b>.${bodyLines}<br><br>
 <b>Momenti total fillestar:</b> ${initP.toFixed(4)} kg·m/s<br>
-<b>Energjia kinetike fillestare:</b> ${(initEk||0).toFixed(4)} J<br>
+<b>Energjia kinetike fillestare:</b> ${(initEk || 0).toFixed(4)} J<br>
 <b>Koef. rigjenerimi:</b> e = ${e}<br><br>
 <b>Ligji i ruajtjes së momentit:</b> Σp_i = Σp_f<br>
 <b>Nxitimi i fërkimit:</b> a = μ·g [m/s²] — varet nga sipërfaqja<br><br>
 <i>Shkurtësa: Space=pause · R=reset · +/-=zoom</i>`;
 
-  } else if(phase==='coll'){
-    const spd1=Math.sqrt(b1.vx*b1.vx+b1.vy*b1.vy);
-    const spd2=Math.sqrt(b2.vx*b2.vx+b2.vy*b2.vy);
-    const relSpd=Math.sqrt((b1.vx-b2.vx)**2+(b1.vy-b2.vy)**2);
-    const p1=b1.m*spd1, p2=b2.m*spd2;
-    const ek1=.5*b1.m*spd1*spd1, ek2=.5*b2.m*spd2*spd2;
-    const pTot=totalP(), ekTot2=totalEk();
-    const ekLost2=Math.max(0,(initEk||ekTot2+1)-ekTot2);
-    el.innerHTML=`<b>PËRPLASJE #${collCount}</b> — t = <b>${simTime.toFixed(3)} s</b><br><br>
-<b style="color:${b1.col}">T${b1.id+1}</b>: m=${b1.m} kg · |v|=${spd1.toFixed(3)} m/s · p=${p1.toFixed(3)} kg·m/s · E_k=${ek1.toFixed(3)} J<br>
-<b style="color:${b2.col}">T${b2.id+1}</b>: m=${b2.m} kg · |v|=${spd2.toFixed(3)} m/s · p=${p2.toFixed(3)} kg·m/s · E_k=${ek2.toFixed(3)} J<br><br>
+      } else if (phase === 'coll') {
+        const spd1 = Math.sqrt(b1.vx * b1.vx + b1.vy * b1.vy);
+        const spd2 = Math.sqrt(b2.vx * b2.vx + b2.vy * b2.vy);
+        const relSpd = Math.sqrt((b1.vx - b2.vx) ** 2 + (b1.vy - b2.vy) ** 2);
+        const p1 = b1.m * spd1, p2 = b2.m * spd2;
+        const ek1 = .5 * b1.m * spd1 * spd1, ek2 = .5 * b2.m * spd2 * spd2;
+        const pTot = totalP(), ekTot2 = totalEk();
+        const ekLost2 = Math.max(0, (initEk || ekTot2 + 1) - ekTot2);
+        el.innerHTML = `<b>PËRPLASJE #${collCount}</b> — t = <b>${simTime.toFixed(3)} s</b><br><br>
+<b style="color:${b1.col}">T${b1.id + 1}</b>: m=${b1.m} kg · |v|=${spd1.toFixed(3)} m/s · p=${p1.toFixed(3)} kg·m/s · E_k=${ek1.toFixed(3)} J<br>
+<b style="color:${b2.col}">T${b2.id + 1}</b>: m=${b2.m} kg · |v|=${spd2.toFixed(3)} m/s · p=${p2.toFixed(3)} kg·m/s · E_k=${ek2.toFixed(3)} J<br><br>
 <b>v_relative</b> = ${relSpd.toFixed(3)} m/s<br>
 <b>Impuls J</b> = (1+e)·μᵣ·v_rel<br><br>
-${e>=1?'✓ <b>Elastike</b>: E_k ruhet plotësisht (Δ=0 J)':
-  e===0?'⚡ <b>Perf. Inelastike</b>: trupa bashkohen, Δ E_k max':
-  `⚙ <b>Pjesërisht Inelastike</b> (e=${e}): ~${((1-e*e)*100).toFixed(0)}% e E_k humbët`}<br><br>
+${e >= 1 ? '✓ <b>Elastike</b>: E_k ruhet plotësisht (Δ=0 J)' :
+            e === 0 ? '⚡ <b>Perf. Inelastike</b>: trupa bashkohen, Δ E_k max' :
+              `⚙ <b>Pjesërisht Inelastike</b> (e=${e}): ~${((1 - e * e) * 100).toFixed(0)}% e E_k humbët`}<br><br>
 <b>p_total tani:</b> ${pTot.toFixed(4)} kg·m/s<br>
 <b>E_k tani:</b> ${ekTot2.toFixed(4)} J<br>
 <b>ΔE_k (humbur):</b> ${ekLost2.toFixed(4)} J`;
-  }
-}
+      }
+    }
 
-// ── CONTROLS ─────────────────────────────────────
-function togglePause(){
-  if(!running){ notify('Fillo simulimin së pari!'); return; }
-  paused=!paused;
-  document.getElementById('btnPause').textContent=paused?'▶ VAZHDO':'⏸ PAUSE';
-  notify(paused?'⏸ Ndërprerë':'▶ Vazhdoi');
-}
+    // ── CONTROLS ─────────────────────────────────────
+    function togglePause() {
+      if (!running) { notify('Fillo simulimin së pari!'); return; }
+      paused = !paused;
+      document.getElementById('btnPause').textContent = paused ? '▶ VAZHDO' : '⏸ PAUSE';
+      notify(paused ? '⏸ Ndërprerë' : '▶ Vazhdoi');
+    }
 
-function resetSim(){
-  if(raf) cancelAnimationFrame(raf);
-  running=false; paused=false; simTime=0; collCount=0;
-  bodies=[]; parts=[]; chartP=[]; chartV=[]; chartEk=[];
-  initEk=null; shakeAmt=0; lastTs=null; window._e=null; _frameCount=0;
-  document.getElementById('collN').textContent='0';
-  document.getElementById('pInit').textContent='—';
-  document.getElementById('pCur').textContent='—';
-  document.getElementById('ekTot').textContent='—';
-  document.getElementById('eLost').textContent='0.000 J';
-  document.getElementById('bodyTbl').innerHTML='';
-  document.getElementById('stopData').innerHTML='<span style="color:var(--txt3);font-size:11px;">Fillo simulimin...</span>';
-  document.getElementById('anaText').textContent='Fillo simulimin për analizën fizike...';
-  document.getElementById('bodyAnaTbl').innerHTML='<span style="color:var(--txt3);font-size:11px;">Fillo simulimin...</span>';
-  document.getElementById('energyBreakdown').innerHTML='<span style="color:var(--txt3);font-size:11px;">Fillo simulimin...</span>';
-  document.getElementById('btnPause').textContent='⏸ PAUSE';
-  // FIX #13
-  document.getElementById('timeHud').textContent='T: 0.00 s';
-  document.getElementById('fpsHud').textContent='60 FPS';
-  // Clear mini charts
-  ['ch1','ch2','ch3'].forEach(id=>{
-    const el=document.getElementById(id);
-    if(el){ const ct=el.getContext('2d'); ct.clearRect(0,0,el.width,el.height); }
-  });
-  drawIdle();
-  notify('↺ Simulimi u rivendos');
-}
+    function resetSim() {
+      if (raf) cancelAnimationFrame(raf);
+      running = false; paused = false; simTime = 0; collCount = 0;
+      bodies = []; parts = []; chartP = []; chartV = []; chartEk = [];
+      initEk = null; shakeAmt = 0; lastTs = null; window._e = null; _frameCount = 0;
+      document.getElementById('collN').textContent = '0';
+      document.getElementById('pInit').textContent = '—';
+      document.getElementById('pCur').textContent = '—';
+      document.getElementById('ekTot').textContent = '—';
+      document.getElementById('eLost').textContent = '0.000 J';
+      document.getElementById('bodyTbl').innerHTML = '';
+      document.getElementById('stopData').innerHTML = '<span style="color:var(--txt3);font-size:11px;">Fillo simulimin...</span>';
+      document.getElementById('anaText').textContent = 'Fillo simulimin për analizën fizike...';
+      document.getElementById('bodyAnaTbl').innerHTML = '<span style="color:var(--txt3);font-size:11px;">Fillo simulimin...</span>';
+      document.getElementById('energyBreakdown').innerHTML = '<span style="color:var(--txt3);font-size:11px;">Fillo simulimin...</span>';
+      document.getElementById('btnPause').textContent = '⏸ PAUSE';
+      // FIX #13
+      document.getElementById('timeHud').textContent = 'T: 0.00 s';
+      document.getElementById('fpsHud').textContent = '60 FPS';
+      // Clear mini charts
+      ['ch1', 'ch2', 'ch3'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { const ct = el.getContext('2d'); ct.clearRect(0, 0, el.width, el.height); }
+      });
+      drawIdle();
+      notify('↺ Simulimi u rivendos');
+    }
 
-function doZoom(f){
-  zoomLvl=Math.max(.15,Math.min(7,zoomLvl*f));
-  document.getElementById('zoomLbl').textContent=Math.round(zoomLvl*100)+'%';
-  // FIX #6
-  if(!running||paused) renderFrame();
-}
-function resetView(){
-  zoomLvl=1; panX=0; panY=0;
-  document.getElementById('zoomLbl').textContent='100%';
-  if(!running||paused) renderFrame();
-}
+    function doZoom(f) {
+      zoomLvl = Math.max(.15, Math.min(7, zoomLvl * f));
+      document.getElementById('zoomLbl').textContent = Math.round(zoomLvl * 100) + '%';
+      // FIX #6
+      if (!running || paused) renderFrame();
+    }
+    function resetView() {
+      zoomLvl = 1; panX = 0; panY = 0;
+      document.getElementById('zoomLbl').textContent = '100%';
+      if (!running || paused) renderFrame();
+    }
 
-function toggleOpt(name){
-  const map={trails:'togTrails',vectors:'togVectors',grid:'togGrid'};
-  if(name==='trails')  showTrails=!showTrails;
-  if(name==='vectors') showVectors=!showVectors;
-  if(name==='grid')    showGrid=!showGrid;
-  const el=document.getElementById(map[name]);
-  el.className='tog'+([showTrails,showVectors,showGrid][['trails','vectors','grid'].indexOf(name)]?' on':'');
-}
+    function toggleOpt(name) {
+      const map = { trails: 'togTrails', vectors: 'togVectors', grid: 'togGrid' };
+      if (name === 'trails') showTrails = !showTrails;
+      if (name === 'vectors') showVectors = !showVectors;
+      if (name === 'grid') showGrid = !showGrid;
+      const el = document.getElementById(map[name]);
+      el.className = 'tog' + ([showTrails, showVectors, showGrid][['trails', 'vectors', 'grid'].indexOf(name)] ? ' on' : '');
+    }
 
-function trigFlash(){
-  const el=document.getElementById('flash');
-  el.classList.add('on');
-  setTimeout(()=>el.classList.remove('on'),110);
-}
+    function trigFlash() {
+      const el = document.getElementById('flash');
+      el.classList.add('on');
+      setTimeout(() => el.classList.remove('on'), 110);
+    }
 
-function setMode(m){
-  appMode=m;
-  document.getElementById('revSection').style.display=m==='reverse'?'block':'none';
-  document.getElementById('revResBox').style.display=m==='reverse'?'block':'none';
-  const mb=document.getElementById('modeBadge');
-  mb.className='badge '+(m==='forward'?'b-cyan':'b-orange');
-  mb.textContent=m==='forward'?'▶ FORWARD':'◀ REVERSE';
-  notify(m==='reverse'?'◀ Modaliteti Reverse (llogarit gjendjen fillestare)':'▶ Modaliteti Forward');
-}
+    function setMode(m) {
+      appMode = m;
+      document.getElementById('revSection').style.display = m === 'reverse' ? 'block' : 'none';
+      document.getElementById('revResBox').style.display = m === 'reverse' ? 'block' : 'none';
+      const mb = document.getElementById('modeBadge');
+      mb.className = 'badge ' + (m === 'forward' ? 'b-cyan' : 'b-orange');
+      mb.textContent = m === 'forward' ? '▶ FORWARD' : '◀ REVERSE';
+      notify(m === 'reverse' ? '◀ Modaliteti Reverse (llogarit gjendjen fillestare)' : '▶ Modaliteti Forward');
+    }
 
-function switchTab(name,el){
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('on'));
-  document.querySelectorAll('.tc').forEach(t=>t.classList.remove('on'));
-  el.classList.add('on');
-  document.getElementById('tc-'+name).classList.add('on');
-}
+    function switchTab(name, el) {
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('on'));
+      document.querySelectorAll('.tc').forEach(t => t.classList.remove('on'));
+      el.classList.add('on');
+      document.getElementById('tc-' + name).classList.add('on');
+    }
 
-// ── REVERSE SIMULATION (FIX #17) ──────────────────
-function calcReverse(){
-  const v1f=+document.getElementById('revV1').value   || 0;
-  const v2f=+document.getElementById('revV2').value   || 0;
-  const a1 =(+document.getElementById('revAngle1').value||0)*Math.PI/180;
-  const a2 =(+document.getElementById('revAngle2').value||0)*Math.PI/180;
-  const m1 =+(document.getElementById('m0')?.value||5);
-  const m2 =+(document.getElementById('m1')?.value||3);
-  const e  =+document.getElementById('eSlider').value;
+    // ── REVERSE SIMULATION (FIX #17) ──────────────────
+    function calcReverse() {
+      const v1f = +document.getElementById('revV1').value || 0;
+      const v2f = +document.getElementById('revV2').value || 0;
+      const a1 = (+document.getElementById('revAngle1').value || 0) * Math.PI / 180;
+      const a2 = (+document.getElementById('revAngle2').value || 0) * Math.PI / 180;
+      const m1 = +(document.getElementById('m0')?.value || 5);
+      const m2 = +(document.getElementById('m1')?.value || 3);
+      const e = +document.getElementById('eSlider').value;
 
-  // Component-wise final momentum
-  const v1fx=v1f*Math.cos(a1), v1fy=v1f*Math.sin(a1);
-  const v2fx=v2f*Math.cos(a2), v2fy=v2f*Math.sin(a2);
+      // Component-wise final momentum
+      const v1fx = v1f * Math.cos(a1), v1fy = v1f * Math.sin(a1);
+      const v2fx = v2f * Math.cos(a2), v2fy = v2f * Math.sin(a2);
 
-  // Conservation of momentum → initial = final (friction ignored for reconstruction)
-  const pfx=m1*v1fx+m2*v2fx, pfy=m1*v1fy+m2*v2fy;
-  const pf=Math.sqrt(pfx*pfx+pfy*pfy);
-  const collAngleBack=Math.atan2(pfy,pfx)*180/Math.PI;
+      // Conservation of momentum → initial = final (friction ignored for reconstruction)
+      const pfx = m1 * v1fx + m2 * v2fx, pfy = m1 * v1fy + m2 * v2fy;
+      const pf = Math.sqrt(pfx * pfx + pfy * pfy);
+      const collAngleBack = Math.atan2(pfy, pfx) * 180 / Math.PI;
 
-  // Reverse the restitution equation:
-  // v1f = ((m1-e*m2)*v1i + (1+e)*m2*v2i)/(m1+m2)
-  // Assume v2i=0 for simplification, solve for v1i:
-  const v1i_est=e>0 ? (m1+m2)*v1f/(m1-e*m2||1) : pf/m1;
-  const v2i_est=e>0 ? (m1+m2)*v2f/((1+e)*m1)   : 0;
+      // Reverse the restitution equation:
+      // v1f = ((m1-e*m2)*v1i + (1+e)*m2*v2i)/(m1+m2)
+      // Assume v2i=0 for simplification, solve for v1i:
+      const v1i_est = e > 0 ? (m1 + m2) * v1f / (m1 - e * m2 || 1) : pf / m1;
+      const v2i_est = e > 0 ? (m1 + m2) * v2f / ((1 + e) * m1) : 0;
 
-  const ekf=.5*m1*v1f**2+.5*m2*v2f**2;
-  const eki=.5*m1*v1i_est**2+.5*m2*v2i_est**2;
-  const ekLost=Math.max(0,eki-ekf);
+      const ekf = .5 * m1 * v1f ** 2 + .5 * m2 * v2f ** 2;
+      const eki = .5 * m1 * v1i_est ** 2 + .5 * m2 * v2i_est ** 2;
+      const ekLost = Math.max(0, eki - ekf);
 
-  document.getElementById('revRes').innerHTML=
-    `<b>Momenti final total:</b> ${pf.toFixed(3)} kg·m/s<br>
+      document.getElementById('revRes').innerHTML =
+        `<b>Momenti final total:</b> ${pf.toFixed(3)} kg·m/s<br>
 <b>Drejtimi i lëvizjes:</b> ${collAngleBack.toFixed(1)}°<br><br>
 <b>Gjendja fillestare e vlerësuar:</b><br>
-• T1: v₀ ≈ <b>${isFinite(v1i_est)?Math.abs(v1i_est).toFixed(2):'—'} m/s</b> @ ${(+document.getElementById('revAngle1').value+180)%360}°<br>
-• T2: v₀ ≈ <b>${isFinite(v2i_est)?Math.abs(v2i_est).toFixed(2):'—'} m/s</b> @ ${(+document.getElementById('revAngle2').value+180)%360}°<br><br>
-Ek fillestare ≈ <b>${isFinite(eki)?eki.toFixed(2):'—'} J</b><br>
+• T1: v₀ ≈ <b>${isFinite(v1i_est) ? Math.abs(v1i_est).toFixed(2) : '—'} m/s</b> @ ${(+document.getElementById('revAngle1').value + 180) % 360}°<br>
+• T2: v₀ ≈ <b>${isFinite(v2i_est) ? Math.abs(v2i_est).toFixed(2) : '—'} m/s</b> @ ${(+document.getElementById('revAngle2').value + 180) % 360}°<br><br>
+Ek fillestare ≈ <b>${isFinite(eki) ? eki.toFixed(2) : '—'} J</b><br>
 Ek finale = <b>${ekf.toFixed(2)} J</b><br>
-Energji e humbur ≈ <b>${isFinite(ekLost)?ekLost.toFixed(2):'—'} J</b>`;
+Energji e humbur ≈ <b>${isFinite(ekLost) ? ekLost.toFixed(2) : '—'} J</b>`;
 
-  notify('🔍 Reverse u llogarit!');
-}
+      notify('🔍 Reverse u llogarit!');
+    }
 
-// ── EXPORT (FIX #18) ──────────────────────────────
-function doExport(){
-  if(bodies.length===0){ notify('⚠ Fillo simulimin së pari!'); return; }
-  const now=new Date().toLocaleString('sq-AL');
-  let csv=`MOMENTUMX PHYSICS SIMULATOR — EKSPORT\nData: ${now}\n`;
-  csv+=`Kohëzgjatja: ${simTime.toFixed(3)} s\nPërplasje: ${collCount}\n`;
-  csv+=`p_total: ${totalP().toFixed(4)} kg·m/s\nEk_total: ${totalEk().toFixed(4)} J\n\n`;
-  csv+=`ID,Masa(kg),vx(m/s),vy(m/s),|v|(m/s),p(kg·m/s),Ek(J)\n`;
-  for(const b of bodies){
-    const spd=Math.sqrt(b.vx*b.vx+b.vy*b.vy);
-    csv+=`T${b.id+1},${b.m},${b.vx.toFixed(3)},${b.vy.toFixed(3)},${spd.toFixed(3)},${(b.m*spd).toFixed(3)},${(.5*b.m*spd*spd).toFixed(3)}\n`;
-  }
-  csv+=`\n// Gjeneruar nga MomentumX © ${new Date().getFullYear()}`;
-  document.getElementById('expBox').textContent=csv;
-  switchTab('ana',document.querySelectorAll('.tab')[2]);
-  notify('✓ Të dhënat u eksportuan (CSV)');
-}
-function copyExp(){
-  const txt=document.getElementById('expBox').textContent;
-  if(!navigator.clipboard){ notify('⚠ Clipboard nuk mbështetet'); return; }
-  navigator.clipboard.writeText(txt).then(()=>notify('📋 Kopjuar në clipboard!'));
-}
+    // ── EXPORT (FIX #18) ──────────────────────────────
+    function doExport() {
+      if (bodies.length === 0) { notify('⚠ Fillo simulimin së pari!'); return; }
+      const now = new Date().toLocaleString('sq-AL');
+      let csv = `MOMENTUMX PHYSICS SIMULATOR — EKSPORT\nData: ${now}\n`;
+      csv += `Kohëzgjatja: ${simTime.toFixed(3)} s\nPërplasje: ${collCount}\n`;
+      csv += `p_total: ${totalP().toFixed(4)} kg·m/s\nEk_total: ${totalEk().toFixed(4)} J\n\n`;
+      csv += `ID,Masa(kg),vx(m/s),vy(m/s),|v|(m/s),p(kg·m/s),Ek(J)\n`;
+      for (const b of bodies) {
+        const spd = Math.sqrt(b.vx * b.vx + b.vy * b.vy);
+        csv += `T${b.id + 1},${b.m},${b.vx.toFixed(3)},${b.vy.toFixed(3)},${spd.toFixed(3)},${(b.m * spd).toFixed(3)},${(.5 * b.m * spd * spd).toFixed(3)}\n`;
+      }
+      csv += `\n// Gjeneruar nga MomentumX © ${new Date().getFullYear()}`;
+      document.getElementById('expBox').textContent = csv;
+      switchTab('ana', document.querySelectorAll('.tab')[2]);
+      notify('✓ Të dhënat u eksportuan (CSV)');
+    }
+    function copyExp() {
+      const txt = document.getElementById('expBox').textContent;
+      if (!navigator.clipboard) { notify('⚠ Clipboard nuk mbështetet'); return; }
+      navigator.clipboard.writeText(txt).then(() => notify('📋 Kopjuar në clipboard!'));
+    }
 
-// ── COLOR UTILS ───────────────────────────────────
-function hex2rgba(h,a){
-  const r=parseInt(h.slice(1,3),16),g=parseInt(h.slice(3,5),16),b=parseInt(h.slice(5,7),16);
-  return `rgba(${r},${g},${b},${a})`;
-}
-function colorLighten(h,f){
-  return `rgb(${Math.min(255,parseInt(h.slice(1,3),16)+Math.round(255*f))},${Math.min(255,parseInt(h.slice(3,5),16)+Math.round(255*f))},${Math.min(255,parseInt(h.slice(5,7),16)+Math.round(255*f))})`;
-}
-function colorDarken(h,f){
-  return `rgb(${Math.round(parseInt(h.slice(1,3),16)*(1-f))},${Math.round(parseInt(h.slice(3,5),16)*(1-f))},${Math.round(parseInt(h.slice(5,7),16)*(1-f))})`;
-}
+    // ── COLOR UTILS ───────────────────────────────────
+    function hex2rgba(h, a) {
+      const r = parseInt(h.slice(1, 3), 16), g = parseInt(h.slice(3, 5), 16), b = parseInt(h.slice(5, 7), 16);
+      return `rgba(${r},${g},${b},${a})`;
+    }
+    function colorLighten(h, f) {
+      return `rgb(${Math.min(255, parseInt(h.slice(1, 3), 16) + Math.round(255 * f))},${Math.min(255, parseInt(h.slice(3, 5), 16) + Math.round(255 * f))},${Math.min(255, parseInt(h.slice(5, 7), 16) + Math.round(255 * f))})`;
+    }
+    function colorDarken(h, f) {
+      return `rgb(${Math.round(parseInt(h.slice(1, 3), 16) * (1 - f))},${Math.round(parseInt(h.slice(3, 5), 16) * (1 - f))},${Math.round(parseInt(h.slice(5, 7), 16) * (1 - f))})`;
+    }
 
-// ── NOTIFICATION ──────────────────────────────────
-let nTimer=null;
-function notify(msg){
-  const el=document.getElementById('notif');
-  el.textContent=msg; el.classList.add('show');
-  if(nTimer) clearTimeout(nTimer);
-  nTimer=setTimeout(()=>el.classList.remove('show'),2800);
-}
-</script>
+    // ── NOTIFICATION ──────────────────────────────────
+    let nTimer = null;
+    function notify(msg) {
+      const el = document.getElementById('notif');
+      el.textContent = msg; el.classList.add('show');
+      if (nTimer) clearTimeout(nTimer);
+      nTimer = setTimeout(() => el.classList.remove('show'), 2800);
+    }
+  </script>
 </body>
+
 </html>
