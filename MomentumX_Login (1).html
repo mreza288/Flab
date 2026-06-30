@@ -1,0 +1,740 @@
+<!DOCTYPE html>
+<html lang="sq">
+<head>
+<meta charset="UTF-8">
+<title>MomentumX — Hyrje</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Orbitron:wght@500;700;900&display=swap');
+
+*{margin:0;padding:0;box-sizing:border-box;}
+:root{
+  --bg0:#010912; --bg1:#040f20;
+  --glass:rgba(5,16,36,0.78); --glass2:rgba(3,10,24,0.92);
+  --c:hsl(190,100%,52%);
+  --c2:hsl(215,100%,55%);
+  --pk:hsl(330,100%,58%);
+  --gn:hsl(148,100%,52%);
+  --or:hsl(30,100%,52%);
+  --t0:#ddeeff; --t1:#5a8aaa; --t2:#1e3e58; --t3:#0a1828;
+  --b0:rgba(0,205,255,0.11); --b1:rgba(0,205,255,0.22); --b2:rgba(0,205,255,0.5);
+  --r:10px; --r2:14px; --r3:20px;
+  --fu:'Inter',system-ui,sans-serif;
+  --fm:'JetBrains Mono','Fira Mono',monospace;
+  --fl:'Orbitron',sans-serif;
+}
+html,body{height:100%;}
+body{
+  background:var(--bg0); color:var(--t0); font-family:var(--fu);
+  min-height:100vh; display:flex; align-items:center; justify-content:center;
+  overflow:hidden; position:relative;
+  background-image:radial-gradient(circle,rgba(0,200,255,0.05) 1px,transparent 1px);
+  background-size:30px 30px;
+}
+body::before{
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:0;
+  background:
+    radial-gradient(ellipse 55% 55% at 15% 20%,rgba(0,60,200,0.12) 0%,transparent 70%),
+    radial-gradient(ellipse 50% 50% at 85% 80%,rgba(0,200,255,0.08) 0%,transparent 70%),
+    radial-gradient(ellipse 70% 40% at 50% 0%,rgba(0,15,50,0.85) 0%,transparent 60%);
+}
+body *{position:relative;z-index:1;}
+
+/* Floating physics particles in background */
+.bg-orbit{
+  position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden;
+}
+.orb{
+  position:absolute; border-radius:50%;
+  animation:orbit linear infinite;
+}
+@keyframes orbit{
+  0%{transform:translate(0,0) rotate(0deg);}
+  100%{transform:translate(0,0) rotate(360deg);}
+}
+@keyframes drift{
+  0%,100%{transform:translateY(0) translateX(0);}
+  50%{transform:translateY(-30px) translateX(20px);}
+}
+
+/* Decorative rings */
+.ring{
+  position:fixed; border-radius:50%; border:1px solid rgba(0,200,255,0.06);
+  pointer-events:none; z-index:0;
+}
+.ring1{width:600px;height:600px;top:50%;left:50%;margin:-300px 0 0 -300px;animation:spin 60s linear infinite;}
+.ring2{width:850px;height:850px;top:50%;left:50%;margin:-425px 0 0 -425px;border-style:dashed;animation:spin 90s linear infinite reverse;}
+@keyframes spin{from{transform:rotate(0deg);}to{transform:rotate(360deg);}}
+
+/* ══════════════════════════════
+   LOGIN CARD
+══════════════════════════════ */
+.login-card{
+  width:100%; max-width:400px; padding:0 20px;
+  animation:cardIn .7s cubic-bezier(.16,1,.3,1);
+}
+@keyframes cardIn{
+  from{opacity:0; transform:translateY(24px) scale(.97);}
+  to{opacity:1; transform:translateY(0) scale(1);}
+}
+
+.brand{
+  display:flex; flex-direction:column; align-items:center;
+  margin-bottom:30px; text-align:center;
+}
+.brand-ico{
+  width:64px; height:64px; border-radius:18px;
+  background:linear-gradient(135deg,var(--c),var(--c2));
+  display:flex; align-items:center; justify-content:center;
+  font-size:30px; margin-bottom:16px;
+  box-shadow:0 0 30px rgba(0,200,255,0.45),0 8px 30px rgba(0,80,255,0.25),
+             inset 0 1px 0 rgba(255,255,255,0.2);
+  animation:brandPulse 4s ease-in-out infinite;
+}
+@keyframes brandPulse{
+  0%,100%{box-shadow:0 0 26px rgba(0,200,255,0.4),0 8px 26px rgba(0,80,255,0.22),inset 0 1px 0 rgba(255,255,255,0.2);}
+  50%{box-shadow:0 0 48px rgba(0,200,255,0.78),0 8px 36px rgba(0,80,255,0.4),inset 0 1px 0 rgba(255,255,255,0.26);}
+}
+.brand h1{
+  font-family:var(--fl); font-size:24px; font-weight:700; letter-spacing:5px;
+  color:var(--c); text-shadow:0 0 22px rgba(0,200,255,0.6);
+  text-transform:uppercase;
+}
+.brand p{
+  font-size:11px; color:var(--t2); letter-spacing:2.5px;
+  text-transform:uppercase; margin-top:6px; font-family:var(--fm);
+}
+
+.panel{
+  background:var(--glass2);
+  border:1px solid var(--b0); border-radius:var(--r3);
+  padding:30px 28px;
+  backdrop-filter:blur(28px);
+  box-shadow:0 20px 60px rgba(0,0,0,0.5),
+             0 0 0 1px rgba(0,200,255,0.04) inset,
+             0 1px 0 rgba(255,255,255,0.03) inset;
+}
+
+/* Tabs: Login / Register */
+.auth-tabs{
+  display:flex; gap:4px; margin-bottom:24px;
+  background:rgba(0,8,22,0.6); border-radius:var(--r2);
+  padding:4px; border:1px solid var(--b0);
+}
+.auth-tab{
+  flex:1; text-align:center; padding:9px 0; border-radius:9px;
+  font-family:var(--fm); font-size:10.5px; font-weight:700;
+  letter-spacing:1.5px; text-transform:uppercase;
+  color:var(--t1); cursor:pointer; transition:all .25s;
+}
+.auth-tab.on{
+  background:linear-gradient(135deg,var(--c),var(--c2));
+  color:#000; box-shadow:0 0 16px rgba(0,200,255,0.35);
+}
+
+.field{margin-bottom:16px;}
+.field label{
+  font-size:9.5px; color:var(--t1); margin-bottom:6px; display:block;
+  letter-spacing:1px; text-transform:uppercase; font-family:var(--fm); font-weight:500;
+}
+.input-wrap{position:relative;}
+.input-wrap .ic{
+  position:absolute; left:13px; top:50%; transform:translateY(-50%);
+  color:var(--t2); font-size:15px; pointer-events:none;
+}
+.field input{
+  width:100%; padding:12px 14px 12px 40px;
+  background:rgba(0,8,22,0.65); border:1px solid var(--b0); border-radius:var(--r);
+  color:var(--t0); font-size:13.5px; font-family:var(--fm);
+  outline:none; transition:all .25s;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.03);
+}
+.field input::placeholder{color:var(--t2);}
+.field input:focus{
+  border-color:var(--c);
+  box-shadow:0 0 0 3px rgba(0,200,255,0.1),inset 0 1px 0 rgba(255,255,255,0.04);
+  background:rgba(0,200,255,0.04);
+}
+
+.row-between{display:flex; align-items:center; justify-content:space-between; margin-bottom:22px; margin-top:-4px;}
+.remember{display:flex; align-items:center; gap:7px; cursor:pointer; user-select:none;}
+.chk{
+  width:15px; height:15px; border-radius:4px; border:1px solid var(--b0);
+  background:rgba(0,8,22,0.6); display:flex; align-items:center; justify-content:center;
+  transition:all .2s; flex-shrink:0;
+}
+.chk.on{background:linear-gradient(135deg,var(--c),var(--c2)); border-color:var(--c);}
+.chk.on::after{content:'✓'; font-size:10px; color:#000; font-weight:900;}
+.remember span{font-size:11px; color:var(--t1); font-family:var(--fm);}
+.forgot{font-size:11px; color:var(--c); font-family:var(--fm); text-decoration:none; cursor:pointer; transition:opacity .2s;}
+.forgot:hover{opacity:.7;}
+
+#btnLogin{
+  width:100%; padding:14px;
+  background:linear-gradient(135deg,hsl(190,100%,50%),hsl(215,100%,48%));
+  border:none; border-radius:var(--r2); color:#000;
+  font-size:13px; font-weight:800; letter-spacing:3.5px; cursor:pointer;
+  font-family:var(--fl); text-transform:uppercase;
+  box-shadow:0 0 26px rgba(0,200,255,0.4),0 6px 20px rgba(0,80,255,0.28),
+             inset 0 1px 0 rgba(255,255,255,0.22);
+  transition:all .2s; position:relative; overflow:hidden;
+  animation:btnGlow 2.8s ease-in-out infinite;
+}
+#btnLogin::after{content:'';position:absolute;inset:0;background:linear-gradient(to bottom,rgba(255,255,255,0.1),transparent 55%);pointer-events:none;}
+@keyframes btnGlow{
+  0%,100%{box-shadow:0 0 20px rgba(0,200,255,0.32),0 6px 16px rgba(0,80,255,0.22),inset 0 1px 0 rgba(255,255,255,0.22);}
+  50%{box-shadow:0 0 42px rgba(0,200,255,0.7),0 6px 26px rgba(0,80,255,0.42),inset 0 1px 0 rgba(255,255,255,0.26);}
+}
+#btnLogin:hover{transform:translateY(-2px);box-shadow:0 0 50px rgba(0,200,255,0.8),0 10px 28px rgba(0,80,255,0.45),inset 0 1px 0 rgba(255,255,255,0.26);}
+#btnLogin:active{transform:translateY(1px);}
+#btnLogin:disabled{opacity:.6; cursor:wait; animation:none;}
+
+.divider{
+  display:flex; align-items:center; gap:12px; margin:20px 0;
+  color:var(--t2); font-size:10px; font-family:var(--fm); letter-spacing:1px; text-transform:uppercase;
+}
+.divider::before,.divider::after{content:'';flex:1;height:1px;background:linear-gradient(to right,transparent,var(--b1),transparent);}
+
+.guest-btn{
+  width:100%; padding:11px; border-radius:var(--r);
+  background:rgba(0,200,255,0.04); border:1px solid var(--b0);
+  color:var(--t1); font-size:11px; font-weight:600; letter-spacing:1px;
+  cursor:pointer; transition:all .22s; text-transform:uppercase;
+  font-family:var(--fm);
+}
+.guest-btn:hover{border-color:var(--b1); color:var(--c); background:rgba(0,200,255,0.08);}
+
+.footer-note{
+  text-align:center; margin-top:22px;
+  font-size:10.5px; color:var(--t2); font-family:var(--fm);
+}
+.footer-note b{color:var(--c); cursor:pointer; font-weight:600;}
+
+/* Status badges row under brand */
+.status-row{
+  display:flex; justify-content:center; gap:10px; margin-top:18px;
+}
+.s-badge{
+  display:flex; align-items:center; gap:5px;
+  padding:4px 11px; border-radius:100px;
+  font-size:9px; font-weight:600; letter-spacing:1px;
+  font-family:var(--fm); text-transform:uppercase;
+  background:rgba(0,255,120,0.06); border:1px solid rgba(0,255,120,0.18); color:var(--gn);
+}
+.s-dot{width:4px;height:4px;border-radius:50%;background:currentColor;animation:dotb 2s ease-in-out infinite;}
+@keyframes dotb{0%,100%{opacity:1;}50%{opacity:.2;}}
+
+/* Error / success message */
+.msg{
+  font-size:11px; font-family:var(--fm); padding:9px 12px;
+  border-radius:var(--r); margin-bottom:14px; display:none;
+  align-items:center; gap:8px; letter-spacing:.3px;
+}
+.msg.show{display:flex;}
+.msg.err{background:rgba(255,50,130,0.08); border:1px solid rgba(255,50,130,0.25); color:var(--pk);}
+.msg.ok{background:rgba(0,255,120,0.08); border:1px solid rgba(0,255,120,0.25); color:var(--gn);}
+
+/* Toggle password visibility */
+.toggle-pw{
+  position:absolute; right:12px; top:50%; transform:translateY(-50%);
+  background:none; border:none; color:var(--t2); cursor:pointer;
+  font-size:13px; padding:4px; transition:color .2s;
+}
+.toggle-pw:hover{color:var(--c);}
+
+/* Loading spinner inside button */
+.spinner{
+  width:14px;height:14px;border:2px solid rgba(0,0,0,0.25);
+  border-top-color:#000; border-radius:50%;
+  display:inline-block; vertical-align:middle; margin-right:8px;
+  animation:spin2 .7s linear infinite;
+}
+@keyframes spin2{to{transform:rotate(360deg);}}
+</style>
+</head>
+<body>
+
+<select id="loginLangSelect" onchange="changeLoginLanguage(this.value)" style="position: fixed; top: 20px; right: 20px; z-index: 100; padding: 6px 12px; font-size: 11px; font-weight: 700; color: var(--c); background: rgba(0, 220, 255, 0.07); border: 1px solid var(--b1); border-radius: 6px; cursor: pointer; outline: none; font-family: 'Inter', sans-serif;">
+  <option value="sq" style="background:#040f20;color:#fff;">SQ</option>
+  <option value="en" style="background:#040f20;color:#fff;">EN</option>
+</select>
+
+<div class="bg-orbit" id="bgOrbit"></div>
+<div class="ring ring1"></div>
+<div class="ring ring2"></div>
+
+<div class="login-card" id="loginCard">
+
+  <div class="brand">
+    <div class="brand-ico">⚛</div>
+    <h1>MomentumX</h1>
+    <p data-key="subTitle">Physics Simulator — Hyrje në Sistem</p>
+    <div class="status-row">
+      <div class="s-badge"><div class="s-dot"></div>100% Offline</div>
+    </div>
+  </div>
+
+  <div class="panel">
+
+    <div class="auth-tabs">
+      <div class="auth-tab on" id="tabLogin" onclick="switchAuth('login')" data-key="tabHyr">Hyr</div>
+      <div class="auth-tab" id="tabReg" onclick="switchAuth('register')" data-key="tabRegjistrohu">Regjistrohu</div>
+    </div>
+
+    <div class="msg" id="msgBox"></div>
+
+    <!-- LOGIN FORM -->
+    <form id="loginForm" onsubmit="return doLogin(event)">
+      <div class="field">
+        <label data-key="lblEmail">Email / Përdorues</label>
+        <div class="input-wrap">
+          <span class="ic">✉</span>
+          <input type="text" id="loginUser" placeholder="emri@shembull.com" autocomplete="username" required>
+        </div>
+      </div>
+      <div class="field">
+        <label data-key="lblPassword">Fjalëkalimi</label>
+        <div class="input-wrap">
+          <span class="ic">🔒</span>
+          <input type="password" id="loginPass" placeholder="••••••••" autocomplete="current-password" required>
+          <button type="button" class="toggle-pw" onclick="togglePw('loginPass',this)">👁</button>
+        </div>
+      </div>
+      <div class="row-between">
+        <div class="remember" onclick="toggleRemember()">
+          <div class="chk on" id="chkRemember"></div>
+          <span data-key="lblMeKujto">Më kujto</span>
+        </div>
+        <span class="forgot" onclick="showMsg(T_LOGIN[currentLang].notifForgot,'ok')" data-key="lblHarrove">Harrove fjalëkalimin?</span>
+      </div>
+      <button type="submit" id="btnLogin" data-key="btnHyr">▶ HYR NË SISTEM</button>
+    </form>
+
+    <!-- REGISTER FORM -->
+    <form id="regForm" style="display:none" onsubmit="return doRegister(event)">
+      <div class="field">
+        <label data-key="lblEmri">Emri i Plotë</label>
+        <div class="input-wrap">
+          <span class="ic">👤</span>
+          <input type="text" id="regName" placeholder="Emri Mbiemri" required>
+        </div>
+      </div>
+      <div class="field">
+        <label>Email</label>
+        <div class="input-wrap">
+          <span class="ic">✉</span>
+          <input type="email" id="regEmail" placeholder="emri@shembull.com" required>
+        </div>
+      </div>
+      <div class="field">
+        <label data-key="lblPassword">Fjalëkalimi</label>
+        <div class="input-wrap">
+          <span class="ic">🔒</span>
+          <input type="password" id="regPass" placeholder="Minimumi 6 karaktere" minlength="6" required>
+          <button type="button" class="toggle-pw" onclick="togglePw('regPass',this)">👁</button>
+        </div>
+      </div>
+      <div class="field" style="margin-bottom:20px">
+        <label data-key="lblPasswordConfirm">Konfirmo Fjalëkalimin</label>
+        <div class="input-wrap">
+          <span class="ic">🔒</span>
+          <input type="password" id="regPass2" placeholder="Përsërit fjalëkalimin" minlength="6" required>
+          <button type="button" class="toggle-pw" onclick="togglePw('regPass2',this)">👁</button>
+        </div>
+      </div>
+      <button type="submit" id="btnReg" data-key="btnKrijo">✓ KRIJO LLOGARI</button>
+    </form>
+
+    <div class="divider" data-key="lblOse">ose</div>
+    <button class="guest-btn" onclick="enterAsGuest()" data-key="btnGuest">⚡ Hyr si Vizitor (Demo)</button>
+
+  </div>
+
+  <div class="footer-note">
+    MomentumX Physics Simulator &copy; 2026 · <b onclick="showMsg(T_LOGIN[currentLang].notifAbout,'ok')" data-key="lblRreth">Rreth Sistemit</b>
+  </div>
+</div>
+
+<!-- MANUAL & FEATURES SCREEN -->
+<div class="login-card" id="manualCard" style="display:none; max-width:680px; width:95%; animation:cardIn .7s cubic-bezier(.16,1,.3,1);">
+  <div class="brand" style="margin-bottom:20px;">
+    <div class="brand-ico">⚛</div>
+    <h1 style="font-size:20px; letter-spacing:4px;" data-key="manualTitle">UDHËZUESI</h1>
+    <p style="font-size:11px;color:var(--t1);margin-top:6px;font-family:var(--fm);" id="welcomeUserTxt">Mirëseerdhe, Përdorues!</p>
+  </div>
+
+  <div class="panel" style="padding:24px; margin-bottom:20px;">
+    <div style="display:grid; grid-template-columns: 1.1fr 0.9fr; gap:24px;">
+      
+      <!-- SI PËRDORET COLUMN -->
+      <div>
+        <h3 style="font-family:var(--fl); font-size:12px; color:var(--c); letter-spacing:1px; margin-bottom:14px; text-transform:uppercase; display:flex; align-items:center; gap:6px;" data-key="manHow">📍 Si Përdoret Programi</h3>
+        <ul style="list-style:none; display:flex; flex-direction:column; gap:14px; font-size:11px; line-height:1.5;">
+          <li>
+            <b style="color:var(--t0)" data-key="step1Title">1. Zvarrit dhe Lësho (Drag & Drop):</b><br>
+            <span style="color:var(--t1)" data-key="step1Desc">Tërhiqni topat e trupave nga brezi i stacionimit (sipër canvas-it) dhe lëshojini në pikën që dëshironi mbi rrjetën e koordinatave për të caktuar pozicionin fillestar.</span>
+          </li>
+          <li>
+            <b style="color:var(--t0)" data-key="step2Title">2. Parametrat Fizikë:</b><br>
+            <span style="color:var(--t1)" data-key="step2Desc">Në panelin e majtë, cakto Masën (kg), Shpejtësinë (m/s), Drejtimin e lëvizjes (°) dhe Fërkimin (μ) për çdo trup të përfshirë në eksperiment.</span>
+          </li>
+          <li>
+            <b style="color:var(--t0)" data-key="step3Title">3. Kontrolli i Kohës:</b><br>
+            <span style="color:var(--t1)" data-key="step3Desc">Shtyp butonin START (ose butonin Space) për të filluar kohën. Mund ta ndalosh ose ta bësh me lëvizje të ngadalësuar (Slow Motion).</span>
+          </li>
+          <li>
+            <b style="color:var(--t0)" data-key="step4Title">4. Zhvendosja e Pamjes:</b><br>
+            <span style="color:var(--t1)" data-key="step4Desc">Zvarritni mausin në canvas për të lëvizur pamjen (Pan) ose përdorni scroll për të bërë zoom (+/-).</span>
+          </li>
+        </ul>
+      </div>
+
+      <!-- ÇFARË DO TË GJENI COLUMN -->
+      <div>
+        <h3 style="font-family:var(--fl); font-size:12px; color:var(--pk); letter-spacing:1px; margin-bottom:14px; text-transform:uppercase; display:flex; align-items:center; gap:6px;" data-key="manFeatures">📊 Çfarë do të gjeni</h3>
+        <ul style="list-style:none; display:flex; flex-direction:column; gap:14px; font-size:11px; line-height:1.5;">
+          <li>
+            <b style="color:var(--t0)" data-key="feat1Title">• Grafikë në kohë reale:</b><br>
+            <span style="color:var(--t1)" data-key="feat1Desc">Grafikët e impulsit total p(t), shpejtësive v(t) dhe energjisë kinetike Ek(t) që përditësohen hap pas hapi.</span>
+          </li>
+          <li>
+            <b style="color:var(--t0)" data-key="feat2Title">• Modaliteti Reverse:</b><br>
+            <span style="color:var(--t1)" data-key="feat2Desc">Rindërtoni gjendjen fillestare të lëvizjes duke u bazuar te vlerat përfundimtare pas përplasjes në bazë të konservimit.</span>
+          </li>
+          <li>
+            <b style="color:var(--t0)" data-key="feat3Title">• Llojet e Përplasjeve:</b><br>
+            <span style="color:var(--t1)" data-key="feat3Desc">Simuloni përplasje plotësisht elastike (ruajtje Ek), pjesërisht inelastike, ose perfektisht inelastike ku trupat ngjiten bashkë.</span>
+          </li>
+          <li>
+            <b style="color:var(--t0)" data-key="feat4Title">• Eksporti Shkencor:</b><br>
+            <span style="color:var(--t1)" data-key="feat4Desc">Shkarkoni të dhënat e plota të përplasjeve në formatin CSV ose kopjoni ato për analiza të mëtejshme.</span>
+          </li>
+        </ul>
+      </div>
+
+    </div>
+  </div>
+
+  <button onclick="launchSimulatorNow()" style="width:100%; height:46px; background:linear-gradient(135deg,var(--c),var(--c2)); border:none; border-radius:var(--r2); color:#000; font-family:var(--fl); font-size:13px; font-weight:900; letter-spacing:2px; cursor:pointer; transition:all 0.2s; box-shadow:0 0 20px rgba(0,220,255,0.3); display:flex; align-items:center; justify-content:center; gap:8px;" data-key="btnNis">
+    🚀 Nis Eksperimentimin
+  </button>
+
+  <div class="footer-note" style="margin-top:16px;">
+    MomentumX Physics Simulator &copy; 2026
+  </div>
+</div>
+
+<script>
+"use strict";
+
+let currentLang = 'sq';
+let currentDisplayName = '';
+
+const T_LOGIN = {
+  sq: {
+    subTitle: "Physics Simulator — Hyrje në Sistem",
+    tabHyr: "Hyr",
+    tabRegjistrohu: "Regjistrohu",
+    lblEmail: "Email / Përdorues",
+    lblPassword: "Fjalëkalimi",
+    lblPasswordConfirm: "Konfirmo Fjalëkalimin",
+    lblMeKujto: "Më kujto",
+    lblHarrove: "Harrove fjalëkalimin?",
+    btnHyr: "▶ HYR NË SISTEM",
+    lblEmri: "Emri i Plotë",
+    btnKrijo: "✓ KRIJO LLOGARI",
+    lblOse: "ose",
+    btnGuest: "⚡ Hyr si Vizitor (Demo)",
+    lblRreth: "Rreth Sistemit",
+    
+    manualTitle: "UDHËZUESI",
+    manHow: "📍 Si Përdoret Programi",
+    manFeatures: "📊 Çfarë do të gjeni",
+    btnNis: "🚀 Nis Eksperimentimin",
+    
+    welcomeTxt: "Mirëseerdhe, {name}! Përpara se të nisësh simulatorin, lexo këtë udhëzues të shpejtë:",
+    
+    step1Title: "1. Zvarrit dhe Lësho (Drag & Drop):",
+    step1Desc: "Tërhiqni topat e trupave nga brezi i stacionimit (sipër canvas-it) dhe lëshojini në pikën që dëshironi mbi rrjetën e koordinatave për të caktuar pozicionin fillestar.",
+    step2Title: "2. Parametrat Fizikë:",
+    step2Desc: "Në panelin e majtë, cakto Masën (kg), Shpejtësinë (m/s), Drejtimin e lëvizjes (°) dhe Fërkimin (μ) për çdo trup të përfshirë në eksperiment.",
+    step3Title: "3. Kontrolli i Kohës:",
+    step3Desc: "Shtyp butonin START (ose butonin Space) për të filluar kohën. Mund ta ndalosh ose ta bësh me lëvizje të ngadalësuar (Slow Motion).",
+    step4Title: "4. Zhvendosja e Pamjes:",
+    step4Desc: "Zvarritni mausin në canvas për të lëvizur pamjen (Pan) ose përdorni scroll për të bërë zoom (+/-).",
+    
+    feat1Title: "• Grafikë në kohë reale:",
+    feat1Desc: "Grafikët e impulsit total p(t), shpejtësive v(t) dhe energjisë kinetike Ek(t) që përditësohen hap pas hapi.",
+    feat2Title: "• Modaliteti Reverse:",
+    feat2Desc: "Rindërtoni gjendjen fillestare të lëvizjes duke u bazuar te vlerat përfundimtare pas përplasjes në bazë të konservimit.",
+    feat3Title: "• Llojet e Përplasjeve:",
+    feat3Desc: "Simuloni përplasje plotësisht elastike (ruajtje Ek), pjesërisht inelastike, ose perfektisht inelastike ku trupat ngjiten bashkë.",
+    feat4Title: "• Eksporti Shkencor:",
+    feat4Desc: "Shkarkoni të dhënat e plota të përplasjeve në formatin CSV ose kopjoni ato për analiza të mëtejshme.",
+    
+    notifWelcome: "Identifikimi u krye me sukses! Po ngarkohet udhëzuesi...",
+    notifRegOk: "Llogaria u krijua me sukses! Po ngarkohet udhëzuesi...",
+    notifGuest: "Duke hapur udhëzuesin si vizitor...",
+    notifForgot: "Kontakto administratorin për rivendosjen e fjalëkalimit.",
+    notifAbout: "Aplikacioni funksionon 100% offline, pa lidhje interneti.",
+    errFields: "Plotëso të gjitha fushat.",
+    errLength: "Fjalëkalimi duhet të ketë të paktën 6 karaktere.",
+    errMatch: "Fjalëkalimet nuk përputhen.",
+    errExist: "Ky email ekziston tashmë. Provo të hysh.",
+    errWrong: "Fjalëkalim i pasaktë.",
+    errNoUser: "Llogaria nuk ekziston. Provo 'Regjistrohu' ose hyr si Vizitor."
+  },
+  en: {
+    subTitle: "Physics Simulator — System Login",
+    tabHyr: "Login",
+    tabRegjistrohu: "Register",
+    lblEmail: "Email / Username",
+    lblPassword: "Password",
+    lblPasswordConfirm: "Confirm Password",
+    lblMeKujto: "Remember me",
+    lblHarrove: "Forgot password?",
+    btnHyr: "▶ LOG IN",
+    lblEmri: "Full Name",
+    btnKrijo: "✓ CREATE ACCOUNT",
+    lblOse: "or",
+    btnGuest: "⚡ Enter as Guest (Demo)",
+    lblRreth: "About System",
+    
+    manualTitle: "USER MANUAL",
+    manHow: "📍 How to Use",
+    manFeatures: "📊 What You'll Find",
+    btnNis: "🚀 Launch Experiment",
+    
+    welcomeTxt: "Welcome, {name}! Before you launch the simulator, here is a quick user manual:",
+    
+    step1Title: "1. Drag & Drop Positioning:",
+    step1Desc: "Drag the body spheres from the staging area (above the canvas) and drop them on the grid to set their initial coordinates.",
+    step2Title: "2. Physical Parameters:",
+    step2Desc: "In the left panel, configure Mass (kg), Speed (m/s), Direction angle (°), and Friction (μ) for each body involved.",
+    step3Title: "3. Time Control:",
+    step3Desc: "Press START or Space key to run the simulation. You can pause or toggle Slow Motion for step-by-step observation.",
+    step4Title: "4. Camera Navigation:",
+    step4Desc: "Drag on the canvas to move the view (Pan) or scroll to zoom in/out (+/-).",
+    
+    feat1Title: "• Real-time Charts:",
+    feat1Desc: "Dynamic charts tracking total linear momentum p(t), individual velocities v(t), and kinetic energy Ek(t).",
+    feat2Title: "• Reverse Mode Calculation:",
+    feat2Desc: "Reconstruct initial conditions from final post-collision conditions using conservation equations.",
+    feat3Title: "• Collision Types:",
+    feat3Desc: "Simulate fully elastic (conserves Ek), partially inelastic, or perfectly inelastic collisions.",
+    feat4Title: "• Scientific Export:",
+    feat4Desc: "Download complete tabular data in CSV format or copy it to Clipboard for further analysis.",
+    
+    notifWelcome: "Login successful! Loading manual...",
+    notifRegOk: "Account created successfully! Loading manual...",
+    notifGuest: "Opening manual as guest...",
+    notifForgot: "Contact administrator to reset password.",
+    notifAbout: "The application runs 100% offline, no internet connection required.",
+    errFields: "Fill out all fields.",
+    errLength: "Password must be at least 6 characters.",
+    errMatch: "Passwords do not match.",
+    errExist: "This email already exists. Try logging in.",
+    errWrong: "Incorrect password.",
+    errNoUser: "Account does not exist. Try 'Register' or enter as Guest."
+  }
+};
+
+function changeLoginLanguage(lang) {
+  currentLang = lang;
+  const dict = T_LOGIN[lang];
+  document.querySelectorAll("[data-key]").forEach(el => {
+    const key = el.getAttribute("data-key");
+    if (dict[key]) {
+      if (el.tagName === 'INPUT') {
+        el.placeholder = dict[key];
+      } else {
+        el.textContent = dict[key];
+      }
+    }
+  });
+  if (document.getElementById('manualCard').style.display === 'block') {
+    document.getElementById('welcomeUserTxt').textContent = dict.welcomeTxt.replace('{name}', currentDisplayName);
+  }
+  // placeholder translation
+  document.getElementById('loginUser').placeholder = lang === 'sq' ? 'emri@shembull.com' : 'username@example.com';
+  document.getElementById('regEmail').placeholder = lang === 'sq' ? 'emri@shembull.com' : 'email@example.com';
+  document.getElementById('regName').placeholder = lang === 'sq' ? 'Emri Mbiemri' : 'John Doe';
+}
+
+// ── Background floating orbit particles (decorative physics theme) ──
+(function initBg(){
+  const container = document.getElementById('bgOrbit');
+  const colors = ['#00ccff','#ff3385','#00ff80','#ffcc00','#ff8800'];
+  for(let i=0;i<14;i++){
+    const o = document.createElement('div');
+    const size = 2 + Math.random()*4;
+    const color = colors[i % colors.length];
+    o.className = 'orb';
+    o.style.width = size+'px';
+    o.style.height = size+'px';
+    o.style.background = color;
+    o.style.boxShadow = '0 0 '+(size*3)+'px '+color;
+    o.style.left = Math.random()*100+'%';
+    o.style.top = Math.random()*100+'%';
+    o.style.opacity = (0.3 + Math.random()*0.4).toFixed(2);
+    o.style.animation = 'drift '+(8+Math.random()*10)+'s ease-in-out infinite';
+    o.style.animationDelay = (Math.random()*5)+'s';
+    container.appendChild(o);
+  }
+})();
+
+// ── Simple local "auth" simulation (offline demo — no backend) ──
+const STORAGE_KEY = 'momentumx_users_v1';
+
+function getUsers(){
+  try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+  catch(e){ return {}; }
+}
+function saveUsers(u){
+  try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(u)); }catch(e){}
+}
+
+function switchAuth(which){
+  document.getElementById('tabLogin').classList.toggle('on', which==='login');
+  document.getElementById('tabReg').classList.toggle('on', which==='register');
+  document.getElementById('loginForm').style.display = which==='login' ? 'block' : 'none';
+  document.getElementById('regForm').style.display   = which==='register' ? 'block' : 'none';
+  hideMsg();
+}
+
+function showMsg(text, type){
+  const el = document.getElementById('msgBox');
+  el.textContent = (type==='err' ? '⚠ ' : '✓ ') + text;
+  el.className = 'msg show ' + (type==='err' ? 'err' : 'ok');
+}
+function hideMsg(){
+  const el = document.getElementById('msgBox');
+  el.className = 'msg';
+}
+
+let remember = true;
+function toggleRemember(){
+  remember = !remember;
+  document.getElementById('chkRemember').className = 'chk' + (remember ? ' on' : '');
+}
+
+function togglePw(id, btn){
+  const inp = document.getElementById(id);
+  const isPw = inp.type === 'password';
+  inp.type = isPw ? 'text' : 'password';
+  btn.style.color = isPw ? 'var(--c)' : 'var(--t2)';
+}
+
+function doLogin(e){
+  e.preventDefault();
+  hideMsg();
+  const user = document.getElementById('loginUser').value.trim();
+  const pass = document.getElementById('loginPass').value;
+  const dict = T_LOGIN[currentLang];
+
+  if(!user || !pass){
+    showMsg(dict.errFields, 'err');
+    return false;
+  }
+
+  const users = getUsers();
+  const found = users[user.toLowerCase()];
+
+  const btn = document.getElementById('btnLogin');
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spinner"></span>${currentLang === 'sq' ? 'DUKE HYRË...' : 'LOGGING IN...'}`;
+
+  setTimeout(() => {
+    if(found && found.pass === pass){
+      showMsg(dict.notifWelcome, 'ok');
+      if(remember) localStorage.setItem('momentumx_session', user.toLowerCase());
+      setTimeout(() => showManualScreen(found.name || user), 700);
+    } else if(!found){
+      showMsg(dict.errNoUser, 'err');
+      btn.disabled = false;
+      btn.textContent = dict.btnHyr;
+    } else {
+      showMsg(dict.errWrong, 'err');
+      btn.disabled = false;
+      btn.textContent = dict.btnHyr;
+    }
+  }, 650);
+
+  return false;
+}
+
+function doRegister(e){
+  e.preventDefault();
+  hideMsg();
+  const name = document.getElementById('regName').value.trim();
+  const email = document.getElementById('regEmail').value.trim().toLowerCase();
+  const pass = document.getElementById('regPass').value;
+  const pass2 = document.getElementById('regPass2').value;
+  const dict = T_LOGIN[currentLang];
+
+  if(!name || !email || !pass || !pass2){
+    showMsg(dict.errFields, 'err');
+    return false;
+  }
+  if(pass.length < 6){
+    showMsg(dict.errLength, 'err');
+    return false;
+  }
+  if(pass !== pass2){
+    showMsg(dict.errMatch, 'err');
+    return false;
+  }
+
+  const users = getUsers();
+  if(users[email]){
+    showMsg(dict.errExist, 'err');
+    return false;
+  }
+
+  const btn = document.getElementById('btnReg');
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spinner"></span>${currentLang === 'sq' ? 'DUKE KRIJUAR...' : 'CREATING...'}`;
+
+  setTimeout(() => {
+    users[email] = { name, pass };
+    saveUsers(users);
+    showMsg(dict.notifRegOk, 'ok');
+    localStorage.setItem('momentumx_session', email);
+    setTimeout(() => showManualScreen(name), 700);
+  }, 650);
+
+  return false;
+}
+
+function enterAsGuest(){
+  const dict = T_LOGIN[currentLang];
+  showMsg(dict.notifGuest, 'ok');
+  setTimeout(() => showManualScreen('Vizitor'), 500);
+}
+
+function goToSimulator(displayName){
+  try{ sessionStorage.setItem('momentumx_user', displayName); }catch(e){}
+  window.location.href = 'MomentumX_Physics_Simulator (10).html';
+}
+
+function showManualScreen(displayName){
+  currentDisplayName = displayName;
+  const dict = T_LOGIN[currentLang];
+  document.getElementById('loginCard').style.display = 'none';
+  document.getElementById('welcomeUserTxt').textContent = dict.welcomeTxt.replace('{name}', displayName);
+  document.getElementById('manualCard').style.display = 'block';
+}
+
+function launchSimulatorNow(){
+  goToSimulator(currentDisplayName);
+}
+
+// Auto-fill remembered user on load
+window.addEventListener('DOMContentLoaded', () => {
+  try{
+    const sess = localStorage.getItem('momentumx_session');
+    if(sess){ document.getElementById('loginUser').value = sess; }
+  }catch(e){}
+});
+</script>
+</body>
+</html>

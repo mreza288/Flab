@@ -3,6 +3,8 @@
 
 <head>
   <meta charset="UTF-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <title>MomentumX Physics Simulator</title>
   <style>
     * {
@@ -29,7 +31,7 @@
     body {
       background: var(--bg);
       color: var(--txt);
-      font-family: 'Segoe UI', Arial, sans-serif;
+      font-family: 'Inter', system-ui, -apple-system, sans-serif;
       height: 100vh;
       overflow: hidden;
       display: flex;
@@ -48,7 +50,9 @@
       padding: 0 18px;
       height: 50px;
       flex-shrink: 0;
-      background: rgba(1, 6, 16, 0.98);
+      background: rgba(1, 6, 16, 0.75);
+      backdrop-filter: blur(24px) saturate(180%);
+      -webkit-backdrop-filter: blur(24px) saturate(180%);
       border-bottom: 1px solid var(--border);
       z-index: 10;
     }
@@ -85,9 +89,9 @@
     }
 
     .logo h1 {
-      font-size: 15px;
-      font-weight: 800;
-      letter-spacing: 3px;
+      font-size: 16px;
+      font-weight: 900;
+      letter-spacing: -0.5px;
       color: var(--cyan);
       text-shadow: 0 0 12px var(--cyan);
       text-transform: uppercase;
@@ -96,7 +100,7 @@
     .logo small {
       font-size: 9px;
       color: var(--txt2);
-      letter-spacing: 2px;
+      letter-spacing: 0.8px;
       display: block;
     }
 
@@ -171,8 +175,10 @@
 
     /* ─── PANELS ─── */
     .panel {
-      background: var(--panel);
-      border-right: 1px solid var(--border);
+      background: rgba(6, 14, 30, 0.65);
+      backdrop-filter: blur(20px) saturate(150%);
+      -webkit-backdrop-filter: blur(20px) saturate(150%);
+      border-right: 1px solid rgba(255, 255, 255, 0.07);
       overflow-y: auto;
       overflow-x: hidden;
       scrollbar-width: thin;
@@ -273,7 +279,6 @@
     .bcard {
       border-radius: 9px;
       overflow: hidden;
-      border: 1px solid var(--border);
       margin-bottom: 9px;
       background: rgba(0, 10, 24, 0.8);
     }
@@ -333,6 +338,7 @@
       width: 100%;
       height: 4px;
       -webkit-appearance: none;
+      appearance: none;
       background: rgba(0, 220, 255, 0.1);
       border-radius: 2px;
       outline: none;
@@ -342,6 +348,7 @@
 
     input[type=range]::-webkit-slider-thumb {
       -webkit-appearance: none;
+      appearance: none;
       width: 13px;
       height: 13px;
       border-radius: 50%;
@@ -353,14 +360,14 @@
     /* ─── ★ START BUTTON ─── */
     #btnStart {
       width: 100%;
-      padding: 13px;
+      padding: 11px 16px;
       background: linear-gradient(135deg, #00dcff, #0050ff);
       border: none;
-      border-radius: 11px;
+      border-radius: 12px;
       color: #000;
-      font-size: 15px;
-      font-weight: 900;
-      letter-spacing: 3px;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
       cursor: pointer;
       box-shadow: 0 0 22px rgba(0, 220, 255, 0.45), 0 4px 18px rgba(0, 80, 255, 0.35);
       transition: all .2s;
@@ -535,6 +542,54 @@
     .ibtn:hover {
       border-color: var(--cyan);
       color: var(--cyan);
+    }
+
+    .staging-area {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 10px 16px;
+      background: rgba(1, 5, 15, 0.85);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .staging-label {
+      font-size: 10px;
+      color: var(--txt2);
+      font-family: 'Inter', sans-serif;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+      font-weight: 700;
+    }
+
+    .staging-ball {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: monospace;
+      font-size: 10px;
+      font-weight: 700;
+      color: #000 !important;
+      cursor: grab;
+      user-select: none;
+      box-shadow: 0 0 10px currentColor;
+      transition: transform .15s, opacity .2s;
+    }
+
+    .staging-ball:active {
+      cursor: grabbing;
+      transform: scale(1.1);
+    }
+
+    .staging-ball.placed {
+      opacity: .25;
+      cursor: default;
+      pointer-events: none;
+      box-shadow: none;
     }
 
     /* ─── CANVAS ─── */
@@ -889,10 +944,21 @@
       </div>
     </div>
     <div class="hdr-r">
-      <div class="badge b-green">
-        <div class="dot"></div>OFFLINE READY
+      <div class="badge b-green" id="badgeOffline">
+        <div class="dot"></div><span data-key="offline">OFFLINE READY</span>
       </div>
-      <div class="badge b-cyan" id="modeBadge">▶ FORWARD</div>
+      <div class="badge b-cyan" id="userBadge"
+        style="background: rgba(0, 220, 255, 0.09); border: 1px solid rgba(0, 220, 255, 0.3); color: var(--cyan);">
+        <span id="userNameEl">👤 Vizitor</span>
+      </div>
+      <button class="btn btn-p" onclick="doLogout()" data-key="logout"
+        style="padding: 3px 8px; font-size: 10px; border-radius: 6px; flex: none; width: auto; margin-top: 0; background: rgba(255, 32, 128, 0.07); border-color: rgba(255, 32, 128, 0.4); color: var(--pink);">DALJE</button>
+      <div class="badge b-cyan" id="modeBadge" data-key="fwd">▶ FORWARD</div>
+      <select id="langSelect" onchange="changeLanguage(this.value)"
+        style="padding: 3px 6px; font-size: 10px; font-weight: 700; color: var(--cyan); background: rgba(0, 220, 255, 0.07); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; outline: none; margin-bottom: 0; width: auto; height: 24px; -webkit-appearance: auto; appearance: auto; background-image: none; font-family: 'Inter', sans-serif;">
+        <option value="sq">SQ</option>
+        <option value="en">EN</option>
+      </select>
       <div id="clockEl">00:00:00</div>
     </div>
   </header>
@@ -904,30 +970,30 @@
 
       <!-- Config -->
       <div class="sec">
-        <div class="sec-t">Konfigurimi</div>
+        <div class="sec-t" data-key="config">Konfigurimi</div>
 
-        <label class="fl">NUMRI I TRUPAVE</label>
+        <label class="fl" data-key="bodyCount">NUMRI I TRUPAVE</label>
         <select id="bodyCount" onchange="rebuildForms()">
-          <option value="2">2 Trupa</option>
-          <option value="3">3 Trupa</option>
-          <option value="4">4 Trupa</option>
-          <option value="5">5 Trupa</option>
+          <option value="2" data-key="bodies2">2 Trupa</option>
+          <option value="3" data-key="bodies3">3 Trupa</option>
+          <option value="4" data-key="bodies4">4 Trupa</option>
+          <option value="5" data-key="bodies5">5 Trupa</option>
         </select>
 
-        <label class="fl">KËNDI KRYESOR I PËRPLASJES (°)</label>
+        <label class="fl" data-key="collAngle">KËNDI KRYESOR I PËRPLASJES (°)</label>
         <input type="number" id="collAngle" value="0" min="0" max="360">
 
-        <label class="fl">LLOJI I PËRPLASJES</label>
+        <label class="fl" data-key="collType">LLOJI I PËRPLASJES</label>
         <select id="collType" onchange="syncE()">
-          <option value="1">Elastike (e = 1.0)</option>
-          <option value="0.75" selected>Pjesërisht Inelastike (e = 0.75)</option>
-          <option value="0.4">Inelastike (e = 0.4)</option>
-          <option value="0">Perfektisht Inelastike (e = 0)</option>
+          <option value="1" data-key="elastike">Elastike (e = 1.0)</option>
+          <option value="0.75" selected data-key="pjesInelastike">Pjesërisht Inelastike (e = 0.75)</option>
+          <option value="0.4" data-key="inelastike">Inelastike (e = 0.4)</option>
+          <option value="0" data-key="perfInelastike">Perfektisht Inelastike (e = 0)</option>
         </select>
 
         <div class="sl-wrap">
           <div class="sl-hd">
-            <span class="sl-lbl">KOEFICIENTI e</span>
+            <span class="sl-lbl" data-key="coefE">KOEFICIENTI e</span>
             <span class="sl-val" id="eValLbl">0.75</span>
           </div>
           <input type="range" id="eSlider" min="0" max="1" step="0.05" value="0.75"
@@ -937,16 +1003,16 @@
 
       <!-- Body params -->
       <div class="sec">
-        <div class="sec-t">Parametrat e Trupave</div>
+        <div class="sec-t" data-key="bodyParams">Parametrat e Trupave</div>
         <div id="bodyForms"></div>
       </div>
 
       <!-- Mode + Reverse -->
       <div class="sec">
-        <div class="sec-t">Modaliteti</div>
+        <div class="sec-t" data-key="modaliteti">Modaliteti</div>
         <div class="brow" style="margin-top:0;">
-          <button class="btn btn-c" id="btnFwd" onclick="setMode('forward')">▶ FORWARD</button>
-          <button class="btn btn-o" id="btnRev" onclick="setMode('reverse')">◀ REVERSE</button>
+          <button class="btn btn-c" id="btnFwd" onclick="setMode('forward')" data-key="fwd">▶ FORWARD</button>
+          <button class="btn btn-o" id="btnRev" onclick="setMode('reverse')" data-key="rev">◀ REVERSE</button>
         </div>
 
         <!-- REVERSE INPUTS -->
@@ -954,34 +1020,35 @@
           <div style="margin-top:10px;">
             <div class="g2">
               <div>
-                <label class="fl">v Finale T1 (m/s)</label>
+                <label class="fl" data-key="revV1Lbl">v Finale T1 (m/s)</label>
                 <input type="number" id="revV1" value="2" step="0.1" min="0">
               </div>
               <div>
-                <label class="fl">v Finale T2 (m/s)</label>
+                <label class="fl" data-key="revV2Lbl">v Finale T2 (m/s)</label>
                 <input type="number" id="revV2" value="5" step="0.1" min="0">
               </div>
               <div>
-                <label class="fl">Drejtimi Final T1 (°)</label>
+                <label class="fl" data-key="revAngle1Lbl">Drejtimi Final T1 (°)</label>
                 <input type="number" id="revAngle1" value="120">
               </div>
               <div>
-                <label class="fl">Drejtimi Final T2 (°)</label>
+                <label class="fl" data-key="revAngle2Lbl">Drejtimi Final T2 (°)</label>
                 <input type="number" id="revAngle2" value="300">
               </div>
             </div>
-            <button class="calc-btn" onclick="calcReverse()">🔍 LLOGARIT GJENDJEN FILLESTARE</button>
+            <button class="calc-btn" onclick="calcReverse()" data-key="calcInit">🔍 LLOGARIT GJENDJEN
+              FILLESTARE</button>
           </div>
         </div>
       </div>
 
       <!-- ★ START -->
       <div class="sec">
-        <button id="btnStart" onclick="startSim()">▶ STARTIM</button>
+        <button id="btnStart" onclick="startSim()" data-key="startim">▶ STARTIM</button>
         <div class="brow">
-          <button class="btn btn-c" onclick="togglePause()" id="btnPause">⏸ PAUSE</button>
-          <button class="btn btn-p" onclick="resetSim()">↺ RESET</button>
-          <button class="btn btn-g" onclick="doExport()">⬇ EXPORT</button>
+          <button class="btn btn-c" onclick="togglePause()" id="btnPause" data-key="pause">⏸ PAUSE</button>
+          <button class="btn btn-p" onclick="resetSim()" data-key="reset">↺ RESET</button>
+          <button class="btn btn-g" onclick="doExport()" data-key="export">⬇ EXPORT</button>
         </div>
       </div>
 
@@ -997,22 +1064,25 @@
           <span id="zoomLbl" style="font-size:10px;color:var(--txt2);">100%</span>
         </div>
         <div class="tb-g">
-          <span class="sl-lbl">SLOW MO</span>
+          <span class="sl-lbl" data-key="slowmo">SLOW MO</span>
           <input type="range" id="speedSlider" min="0.05" max="2" step="0.05" value="1" style="width:80px"
             oninput="simSpeed=parseFloat(this.value);document.getElementById('speedLbl').textContent=parseFloat(this.value).toFixed(2)+'×'">
           <span id="speedLbl" class="sl-val">1.00×</span>
         </div>
         <div class="tb-g" style="gap:10px;">
           <div class="tog-row" onclick="toggleOpt('trails')">
-            <div class="tog on" id="togTrails"></div><span class="tog-lbl">TRAILS</span>
+            <div class="tog on" id="togTrails"></div><span class="tog-lbl" data-key="trails">TRAILS</span>
           </div>
           <div class="tog-row" onclick="toggleOpt('vectors')">
-            <div class="tog on" id="togVectors"></div><span class="tog-lbl">VECTORS</span>
+            <div class="tog on" id="togVectors"></div><span class="tog-lbl" data-key="vectors">VECTORS</span>
           </div>
           <div class="tog-row" onclick="toggleOpt('grid')">
-            <div class="tog on" id="togGrid"></div><span class="tog-lbl">GRID</span>
+            <div class="tog on" id="togGrid"></div><span class="tog-lbl" data-key="grid">GRID</span>
           </div>
         </div>
+      </div>
+      <div class="staging-area" id="stagingArea">
+        <span class="staging-label" data-key="stagingLabel">Tërhiq trupat mbi rrjetin:</span>
       </div>
       <div class="canvas-wrap">
         <canvas id="cv"></canvas>
@@ -1025,42 +1095,48 @@
     <!-- ════ RIGHT PANEL ════ -->
     <div class="panel panel-r">
       <div class="tabs">
-        <div class="tab on" onclick="switchTab('res',this)">REZULTATE</div>
-        <div class="tab" onclick="switchTab('charts',this)">GRAFIK</div>
-        <div class="tab" onclick="switchTab('ana',this)">ANALIZA</div>
+        <div class="tab on" onclick="switchTab('res',this)" data-key="rezultate">REZULTATE</div>
+        <div class="tab" onclick="switchTab('charts',this)" data-key="grafik">GRAFIK</div>
+        <div class="tab" onclick="switchTab('ana',this)" data-key="analiza">ANALIZA</div>
       </div>
 
       <!-- RESULTS -->
       <div class="tc on" id="tc-res">
         <div class="sec">
-          <div class="sec-t">Statistikat</div>
+          <div class="sec-t" data-key="statistikat">Statistikat</div>
           <div class="cbox">
             <div>
               <div class="cnum" id="collN">0</div>
-              <div class="clbl">PËRPLASJE</div>
+              <div class="clbl" data-key="perplasje">PËRPLASJE</div>
             </div>
             <div style="flex:1">
-              <div class="dr"><span class="dl">Energji e humbur</span><span class="dv pk" id="eLost">0.000 J</span>
+              <div class="dr"><span class="dl" data-key="eHumbur">Energji e humbur</span><span class="dv pk"
+                  id="eLost">0.000 J</span>
               </div>
-              <div class="dr"><span class="dl">Kohëzgjatja</span><span class="dv c" id="simDur">0.00 s</span></div>
+              <div class="dr"><span class="dl" data-key="simDurLbl">Kohëzgjatja</span><span class="dv c"
+                  id="simDur">0.00 s</span></div>
             </div>
           </div>
         </div>
 
         <div class="sec">
-          <div class="sec-t">Momenti Linear</div>
-          <div class="dr"><span class="dl">p_total fillestare</span><span class="dv c" id="pInit">—</span></div>
-          <div class="dr"><span class="dl">p_total aktuale</span> <span class="dv g" id="pCur">—</span></div>
-          <div class="dr"><span class="dl">Ek totale</span> <span class="dv o" id="ekTot">—</span></div>
-          <div class="dr"><span class="dl">Koef. e</span> <span class="dv c" id="eDisp">—</span></div>
+          <div class="sec-t" data-key="momentiLinear">Momenti Linear</div>
+          <div class="dr"><span class="dl" data-key="pInit">p_total fillestare</span><span class="dv c"
+              id="pInit">—</span></div>
+          <div class="dr"><span class="dl" data-key="pCur">p_total aktuale</span> <span class="dv g" id="pCur">—</span>
+          </div>
+          <div class="dr"><span class="dl" data-key="ekTot">Ek totale</span> <span class="dv o" id="ekTot">—</span>
+          </div>
+          <div class="dr"><span class="dl" data-key="coefEDisp">Koef. e</span> <span class="dv c" id="eDisp">—</span>
+          </div>
         </div>
 
         <div class="sec">
-          <div class="sec-t">Gjendja e Trupave</div>
+          <div class="sec-t" data-key="gjendjaTrupave">Gjendja e Trupave</div>
           <table>
             <thead>
               <tr>
-                <th>Trupi</th>
+                <th data-key="trupi">Trupi</th>
                 <th>v (m/s)</th>
                 <th>p (kg·m/s)</th>
                 <th>Ek (J)</th>
@@ -1071,12 +1147,13 @@
         </div>
 
         <div class="sec">
-          <div class="sec-t">Ndalimi, Distanca &amp; Pas Përplasjes</div>
-          <div id="stopData"><span style="color:var(--txt3);font-size:11px;">Fillo simulimin...</span></div>
+          <div class="sec-t" data-key="ndalimiDist">Ndalimi, Distanca &amp; Pas Përplasjes</div>
+          <div id="stopData"><span style="color:var(--txt3);font-size:11px;" data-key="filloSim">Fillo
+              simulimin...</span></div>
         </div>
 
         <div class="sec" id="revResBox" style="display:none;">
-          <div class="sec-t">Simulimi i Kundërt</div>
+          <div class="sec-t" data-key="simKundert">Simulimi i Kundërt</div>
           <div class="atext" id="revRes"></div>
         </div>
       </div>
@@ -1084,15 +1161,15 @@
       <!-- CHARTS -->
       <div class="tc" id="tc-charts">
         <div class="sec">
-          <div class="sec-t">Momenti p(t)</div>
+          <div class="sec-t" data-key="grafikP">Momenti p(t)</div>
           <div class="chart-box"><canvas id="ch1"></canvas></div>
         </div>
         <div class="sec">
-          <div class="sec-t">Shpejtësia v(t)</div>
+          <div class="sec-t" data-key="grafikV">Shpejtësia v(t)</div>
           <div class="chart-box"><canvas id="ch2"></canvas></div>
         </div>
         <div class="sec">
-          <div class="sec-t">Energjia Ek(t)</div>
+          <div class="sec-t" data-key="grafikEk">Energjia Ek(t)</div>
           <div class="chart-box"><canvas id="ch3"></canvas></div>
         </div>
       </div>
@@ -1102,29 +1179,30 @@
 
         <!-- Per-body table -->
         <div class="sec">
-          <div class="sec-t">Të Dhënat e Secilit Trup (SI)</div>
+          <div class="sec-t" data-key="teDhenatSecilit">Të Dhënat e Secilit Trup (SI)</div>
           <div id="bodyAnaTbl" style="overflow-x:auto;">
-            <span style="color:var(--txt3);font-size:11px;">Fillo simulimin...</span>
+            <span style="color:var(--txt3);font-size:11px;" data-key="filloSim">Fillo simulimin...</span>
           </div>
         </div>
 
         <!-- Energy breakdown -->
         <div class="sec">
-          <div class="sec-t">Bilanci i Energjisë (J)</div>
+          <div class="sec-t" data-key="bilanciEn">Bilanci i Energjisë (J)</div>
           <div id="energyBreakdown">
-            <span style="color:var(--txt3);font-size:11px;">Fillo simulimin...</span>
+            <span style="color:var(--txt3);font-size:11px;" data-key="filloSim">Fillo simulimin...</span>
           </div>
         </div>
 
         <!-- Narrative analysis -->
         <div class="sec">
-          <div class="sec-t">Analiza Fizike</div>
-          <div class="atext" id="anaText">Fillo simulimin për analizën fizike të detajuar...</div>
+          <div class="sec-t" data-key="analizaFizike">Analiza Fizike</div>
+          <div class="atext" id="anaText" data-key="analizaFizikeDet">Fillo simulimin për analizën fizike të detajuar...
+          </div>
         </div>
 
         <!-- Formulat -->
         <div class="sec">
-          <div class="sec-t">Formulat (Sistemi SI)</div>
+          <div class="sec-t" data-key="formulat">Formulat (Sistemi SI)</div>
           <div class="atext" style="line-height:2.1;font-size:11px;">
             <b>p = m · v</b> [kg·m/s]<br>
             <b>F_f = μ · m · g</b> [N]<br>
@@ -1140,7 +1218,7 @@
 
         <!-- Charts in analysis tab too -->
         <div class="sec">
-          <div class="sec-t">Grafiku p(t) — Momenti [kg·m/s]</div>
+          <div class="sec-t" data-key="grafikP">Grafiku p(t) — Momenti [kg·m/s]</div>
           <div class="chart-box" style="height:90px;"><canvas id="ch1b"></canvas></div>
           <div style="display:flex;justify-content:space-between;margin-top:4px;">
             <span style="font-size:9px;color:var(--txt2);">t=0</span>
@@ -1149,7 +1227,7 @@
           </div>
         </div>
         <div class="sec">
-          <div class="sec-t">Grafiku v(t) — Shpejtësia [m/s]</div>
+          <div class="sec-t" data-key="grafikV">Grafiku v(t) — Shpejtësia [m/s]</div>
           <div class="chart-box" style="height:90px;"><canvas id="ch2b"></canvas></div>
           <div style="display:flex;justify-content:space-between;margin-top:4px;">
             <span style="font-size:9px;color:var(--txt2);">t=0</span>
@@ -1158,7 +1236,7 @@
           </div>
         </div>
         <div class="sec">
-          <div class="sec-t">Grafiku E_k(t) — Energjia Kinetike [J]</div>
+          <div class="sec-t" data-key="grafikEk">Grafiku E_k(t) — Energjia Kinetike [J]</div>
           <div class="chart-box" style="height:90px;"><canvas id="ch3b"></canvas></div>
           <div style="display:flex;justify-content:space-between;margin-top:4px;">
             <span style="font-size:9px;color:var(--txt2);">t=0</span>
@@ -1169,12 +1247,12 @@
 
         <!-- Export -->
         <div class="sec">
-          <div class="sec-t">Eksporti CSV/TXT</div>
+          <div class="sec-t" data-key="eksportiCsv">Eksporti CSV/TXT</div>
           <div class="exp-box" id="expBox">// Rezultatet shfaqen këtu pas eksportit...</div>
           <div style="margin-top:7px;">
             <button class="calc-btn"
               style="background:rgba(0,220,255,0.07);border-color:rgba(0,220,255,0.4);color:var(--cyan);"
-              onclick="copyExp()">📋 KOPJO</button>
+              onclick="copyExp()" data-key="kopjo">📋 KOPJO</button>
           </div>
         </div>
       </div>
@@ -1189,6 +1267,18 @@
 ════════════════════════════════════════════════ -->
   <script>
     "use strict";
+
+    // ── SESSION CHECK ─────────────────────────────────
+    const sessionUser = sessionStorage.getItem('momentumx_user') || localStorage.getItem('momentumx_session');
+    if (!sessionUser) {
+      window.location.href = 'MomentumX_Login (1).html';
+    }
+
+    function doLogout() {
+      sessionStorage.removeItem('momentumx_user');
+      localStorage.removeItem('momentumx_session');
+      window.location.href = 'MomentumX_Login (1).html';
+    }
 
     // ── CANVAS SETUP ──────────────────────────────────
     const cv = document.getElementById('cv');
@@ -1211,7 +1301,7 @@
     let running = false, paused = false;
     let simTime = 0, simSpeed = 1;
     let zoomLvl = 1, panX = 0, panY = 0;
-    let bodies = [], parts = [];
+    let bodies = [], parts = [], rings = [];
     let collCount = 0;
     let raf = null, lastTs = null;
     let fpsArr = [], shakeAmt = 0;
@@ -1219,6 +1309,336 @@
     let showTrails = true, showVectors = true, showGrid = true;
     let appMode = 'forward';
     let chartP = [], chartV = [], chartEk = [];
+    let _frameCount = 0;
+
+    let bodyPositions = {};
+
+    let currentLang = 'sq';
+    const T = {
+      sq: {
+        offline: "OFFLINE READY",
+        fwd: "▶ FORWARD",
+        rev: "◀ REVERSE",
+        config: "Konfigurimi",
+        bodyCount: "NUMRI I TRUPAVE",
+        bodies2: "2 Trupa",
+        bodies3: "3 Trupa",
+        bodies4: "4 Trupa",
+        bodies5: "5 Trupa",
+        collAngle: "KËNDI KRYESOR I PËRPLASJES (°)",
+        collType: "LLOJI I PËRPLASJES",
+        elastike: "Elastike (e = 1.0)",
+        pjesInelastike: "Pjesërisht Inelastike (e = 0.75)",
+        inelastike: "Inelastike (e = 0.4)",
+        perfInelastike: "Perfektisht Inelastike (e = 0)",
+        coefE: "KOEFICIENTI e",
+        bodyParams: "Parametrat e Trupave",
+        masa: "MASA",
+        shpejtesia: "SHPEJTËSIA",
+        drejtimi: "DREJTIMI",
+        ferkimi: "FËRKIMI μ",
+        distFill: "DISTANCA FILLESTARE (px)",
+        modaliteti: "Modaliteti",
+        calcInit: "🔍 LLOGARIT GJENDJEN FILLESTARE",
+        startim: "▶ STARTIM",
+        pause: "⏸ PAUSE",
+        vazhdo: "▶ VAZHDO",
+        reset: "↺ RESET",
+        export: "⬇ EXPORT",
+        slowmo: "SLOW MO",
+        trails: "TRAILS",
+        vectors: "VECTORS",
+        grid: "GRID",
+        rezultate: "REZULTATE",
+        grafik: "GRAFIK",
+        analiza: "ANALIZA",
+        statistikat: "Statistikat",
+        perplasje: "PËRPLASJE",
+        eHumbur: "Energji e humbur",
+        kohezgjatja: "Kohëzgjatja",
+        momentiLinear: "Momenti Linear",
+        pInit: "p_total fillestare",
+        pCur: "p_total aktuale",
+        ekTot: "Ek totale",
+        coefEDisp: "Koef. e",
+        gjendjaTrupave: "Gjendja e Trupave",
+        trupi: "Trupi",
+        v: "v (m/s)",
+        p: "p (kg·m/s)",
+        ek: "Ek (J)",
+        ndalimiDist: "Ndalimi, Distanca & Pas Përplasjes",
+        filloSim: "Fillo simulimin...",
+        simKundert: "Simulimi i Kundërt",
+        teDhenatSecilit: "Të Dhënat e Secilit Trup (SI)",
+        bilanciEn: "Bilanci i Energjisë (J)",
+        analizaFizike: "Analiza Fizike",
+        analizaFizikeDet: "Fillo simulimin për analizën fizike të detajuar...",
+        formulat: "Formulat (Sistemi SI)",
+        grafikP: "Grafiku p(t) — Momenti [kg·m/s]",
+        grafikV: "Grafiku v(t) — Shpejtësia [m/s]",
+        grafikEk: "Grafiku E_k(t) — Energjia Kinetike [J]",
+        eksportiCsv: "Eksporti CSV/TXT",
+        kopjo: "📋 KOPJO",
+        notifReady: "MomentumX gati! Shtyp ▶ STARTIM ose Space.",
+        notifNoBodies: "⚠ Nuk ka trupa!",
+        notifStart: "▶ Simulimi filloi! [Space=pause, R=reset]",
+        notifPause: "⏸ Ndërprerë",
+        notifResume: "▶ Vazhdoi",
+        notifReset: "↺ Simulimi u rivendos",
+        notifReverse: "🔍 Reverse u llogarit!",
+        notifExport: "✓ Të dhënat u eksportuan (CSV)",
+        notifCopy: "📋 Kopjuar në clipboard!",
+        notifClipboardErr: "⚠ Clipboard nuk mbështetet",
+        notifFwdMode: "▶ Modaliteti Forward",
+        notifRevMode: "◀ Modaliteti Reverse (llogarit gjendjen fillestare)",
+        notifNoBodiesSim: "Fillo simulimin për analizën fizike...",
+        idleTitle: "MOMENTUMX PHYSICS SIMULATOR",
+        idleSub: "Vendos parametrat → Shtyp  ▶ STARTIM",
+        idleControls: "Drag = lëviz  |  Scroll = zoom  |  Space = pause  |  R = reset",
+        t1: "TRUPI 1",
+        t2: "TRUPI 2",
+        t3: "TRUPI 3",
+        t4: "TRUPI 4",
+        t5: "TRUPI 5",
+        expTitle: "MOMENTUMX PHYSICS SIMULATOR — EKSPORT",
+        expDate: "Data",
+        legendTitle: "LEGJENDA KOLONAVE",
+        legendLabel: "LEGJENDA",
+        legendStopT: "t_ndalim",
+        legendStopTDesc: "koha derisa trupi ndalon (nga pozicioni aktual)",
+        legendStopS: "s_ndalim",
+        legendStopSDesc: "distanca e pershkruar derisa ndalon (nga pozicioni aktual)",
+        legendPostD: "d_pershkruar",
+        legendPostDDesc: "distanca totale e pershkruar pas perplasjes se fundit",
+        legendPostStopT: "t_ndalim pas perpl.",
+        legendPostStopTDesc: "koha e ndalimit duke u llogaritur nga momenti i perplasjes",
+        legendPostStopS: "s_ndalim pas perpl.",
+        legendPostStopSDesc: "distanca teorike e ndalimit nga pika e perplasjes",
+        legendPostEk: "E_k pas perpl.",
+        legendPostEkDesc: "energjia kinetike e trupit menjehere pas perplasjes",
+        legendFormula: "Formula",
+        revV1Lbl: "v Finale T1 (m/s)",
+        revV2Lbl: "v Finale T2 (m/s)",
+        revAngle1Lbl: "Drejtimi Final T1 (°)",
+        revAngle2Lbl: "Drejtimi Final T2 (°)",
+        simDurLbl: "Kohëzgjatja",
+        thetaDesc: "drejtimi i lëvizjes",
+        ffDesc: "forca e fërkimit (μ·m·g)",
+        tStopDesc: "koha ndalim nga pozicioni aktual",
+        sStopDesc: "distanca ndalim nga pozicioni aktual (m)",
+        dTravDesc: "distanca e pershkruar nga nisja",
+        tElDesc: "koha e kaluar gjithsej",
+        tCollDesc: "koha kur trupi u ndalua plotesisht",
+        vPasDesc: "shpejtesia menjehere pas perplasjes",
+        ekPasDesc: "energjia kinetike pas perplasjes",
+        tStopPasDesc: "koha e ndalimit te llogaritur nga pika e perplasjes",
+        sStopPasDesc: "distanca teorike e ndalimit nga pika e perplasjes (px)",
+        dPasDesc: "distanca reale e pershkruar pas perplasjes (px)",
+        postColl: "📍 Pas Përplasjes",
+        vPost: "v pas perplasjes",
+        ekPost: "E_k pas perpl.",
+        tStopPost: "t_ndalim pas perpl.",
+        sStopPost: "s_ndalim pas perpl.",
+        dPost: "d_pershkruar pas perpl.",
+        tSinceColl: "kohë nga perplasja",
+        noCollYet: "— nuk ka patur përplasje ende —",
+        body: "TRUPI",
+        stopped: "NDALUR",
+        moving: "LËVIZ",
+        vAct: "|v| aktuale",
+        tStopAct: "t_ndalim (nga tani)",
+        sStopAct: "s_ndalim (nga tani)",
+        stoppedAt: "ndalur në t=",
+        legend: "LEGJENDA",
+        formulaLbl: "Formula:",
+        logout: "DALJE",
+        stagingLabel: "Tërhiq trupat mbi rrjetin:",
+        notifStagingPlace: "u vendos në rrjetin koordinativ",
+        notifStagingMissing: "Vendos të gjithë trupat mbi rrjetin"
+      },
+      en: {
+        offline: "OFFLINE READY",
+        fwd: "▶ FORWARD",
+        rev: "◀ REVERSE",
+        config: "Configuration",
+        bodyCount: "BODY COUNT",
+        bodies2: "2 Bodies",
+        bodies3: "3 Bodies",
+        bodies4: "4 Bodies",
+        bodies5: "5 Bodies",
+        collAngle: "MAIN COLLISION ANGLE (°)",
+        collType: "COLLISION TYPE",
+        elastike: "Elastic (e = 1.0)",
+        pjesInelastike: "Partially Inelastic (e = 0.75)",
+        inelastike: "Inelastic (e = 0.4)",
+        perfInelastike: "Perfectly Inelastic (e = 0)",
+        coefE: "COEFFICIENT e",
+        bodyParams: "Body Parameters",
+        masa: "MASS (kg)",
+        shpejtesia: "SPEED (m/s)",
+        drejtimi: "DIRECTION (°)",
+        ferkimi: "FRICTION μ",
+        distFill: "INITIAL DISTANCE (px)",
+        modaliteti: "Mode",
+        calcInit: "🔍 CALCULATE INITIAL STATE",
+        startim: "▶ START",
+        pause: "⏸ PAUSE",
+        vazhdo: "▶ CONTINUE",
+        reset: "↺ RESET",
+        export: "⬇ EXPORT",
+        slowmo: "SLOW MO",
+        trails: "TRAILS",
+        vectors: "VECTORS",
+        grid: "GRID",
+        rezultate: "RESULTS",
+        grafik: "CHARTS",
+        analiza: "ANALYSIS",
+        statistikat: "Statistics",
+        perplasje: "COLLISIONS",
+        eHumbur: "Energy Lost",
+        kohezgjatja: "Duration",
+        momentiLinear: "Linear Momentum",
+        pInit: "Initial p_total",
+        pCur: "Current p_total",
+        ekTot: "Total Ek",
+        coefEDisp: "Coef. e",
+        gjendjaTrupave: "State of Bodies",
+        trupi: "Body",
+        v: "v (m/s)",
+        p: "p (kg·m/s)",
+        ek: "Ek (J)",
+        ndalimiDist: "Stop, Distance & Post-Collision",
+        filloSim: "Start simulation...",
+        simKundert: "Reverse Simulation",
+        teDhenatSecilit: "Individual Body Data (SI)",
+        bilanciEn: "Energy Balance (J)",
+        analizaFizike: "Physics Analysis",
+        analizaFizikeDet: "Start simulation for detailed physics analysis...",
+        formulat: "Formulas (SI System)",
+        grafikP: "Chart p(t) — Momentum [kg·m/s]",
+        grafikV: "Chart v(t) — Velocity [m/s]",
+        grafikEk: "Chart E_k(t) — Kinetic Energy [J]",
+        eksportiCsv: "CSV/TXT Export",
+        kopjo: "📋 COPY",
+        notifReady: "MomentumX ready! Press ▶ START or Space.",
+        notifNoBodies: "⚠ No bodies!",
+        notifStart: "▶ Simulation started! [Space=pause, R=reset]",
+        notifPause: "⏸ Paused",
+        notifResume: "▶ Resumed",
+        notifReset: "↺ Simulation reset",
+        notifReverse: "🔍 Reverse calculated!",
+        notifExport: "✓ Data exported (CSV)",
+        notifCopy: "📋 Copied to clipboard!",
+        notifClipboardErr: "⚠ Clipboard not supported",
+        notifFwdMode: "▶ Forward Mode",
+        notifRevMode: "◀ Reverse Mode (calculate initial state)",
+        notifNoBodiesSim: "Start simulation for physics analysis...",
+        idleTitle: "MOMENTUMX PHYSICS SIMULATOR",
+        idleSub: "Set parameters → Press ▶ START",
+        idleControls: "Drag = pan  |  Scroll = zoom  |  Space = pause  |  R = reset",
+        t1: "BODY 1",
+        t2: "BODY 2",
+        t3: "BODY 3",
+        t4: "BODY 4",
+        t5: "BODY 5",
+        expTitle: "MOMENTUMX PHYSICS SIMULATOR — EXPORT",
+        expDate: "Date",
+        legendTitle: "COLUMN LEGEND",
+        legendLabel: "LEGEND",
+        legendStopT: "t_stop",
+        legendStopTDesc: "time until body stops (from current position)",
+        legendStopS: "s_stop",
+        legendStopSDesc: "distance traveled until stop (from current position)",
+        legendPostD: "d_traveled",
+        legendPostDDesc: "total distance traveled since last collision",
+        legendPostStopT: "t_stop post-coll.",
+        legendPostStopTDesc: "stop time calculated from collision moment",
+        legendPostStopS: "s_stop post-coll.",
+        legendPostStopSDesc: "theoretical stop distance from collision point",
+        legendPostEk: "E_k post-coll.",
+        legendPostEkDesc: "kinetic energy of the body immediately after collision",
+        legendFormula: "Formula",
+        revV1Lbl: "Final v T1 (m/s)",
+        revV2Lbl: "Final v T2 (m/s)",
+        revAngle1Lbl: "Final Dir T1 (°)",
+        revAngle2Lbl: "Final Dir T2 (°)",
+        simDurLbl: "Duration",
+        thetaDesc: "direction of motion",
+        ffDesc: "force of friction (μ·m·g)",
+        tStopDesc: "stopping time from current position",
+        sStopDesc: "stopping distance from current position (m)",
+        dTravDesc: "distance traveled from start",
+        tElDesc: "total elapsed time",
+        tCollDesc: "time when the body stopped completely",
+        vPasDesc: "velocity immediately after collision",
+        ekPasDesc: "kinetic energy after collision",
+        tStopPasDesc: "stopping time calculated from collision point",
+        sStopPasDesc: "theoretical stopping distance from collision point (px)",
+        dPasDesc: "actual distance traveled after collision (px)",
+        postColl: "📍 Post-Collision",
+        vPost: "v post-collision",
+        ekPost: "E_k post-coll.",
+        tStopPost: "t_stop post-coll.",
+        sStopPost: "s_stop post-coll.",
+        dPost: "dist. post-coll.",
+        tSinceColl: "time since coll.",
+        noCollYet: "— no collision yet —",
+        body: "BODY",
+        stopped: "STOPPED",
+        moving: "MOVING",
+        vAct: "current |v|",
+        tStopAct: "t_stop (from now)",
+        sStopAct: "s_stop (from now)",
+        stoppedAt: "stopped at t=",
+        legend: "LEGEND",
+        formulaLbl: "Formula:",
+        logout: "LOGOUT",
+        stagingLabel: "Drag bodies onto the grid:",
+        notifStagingPlace: "placed on the coordinate grid",
+        notifStagingMissing: "Place all bodies on the grid"
+      }
+    };
+
+    function changeLanguage(lang) {
+      currentLang = lang;
+      const dict = T[lang];
+
+      document.querySelectorAll("[data-key]").forEach(el => {
+        const key = el.getAttribute("data-key");
+        if (dict[key]) {
+          if (el.tagName === 'INPUT' || el.tagName === 'TEXTAREA') {
+            el.placeholder = dict[key];
+          } else {
+            const currentText = el.textContent.trim();
+            const symbolMatch = currentText.match(/^([▶⏸↺◀🔍⬇📋⚛⊙＋－]|\+\/-)\s*/);
+            if (symbolMatch) {
+              const symbol = symbolMatch[0];
+              let val = dict[key];
+              if (val.startsWith(symbol.trim())) {
+                el.textContent = val;
+              } else {
+                el.textContent = symbol + val;
+              }
+            } else {
+              el.textContent = dict[key];
+            }
+          }
+        }
+      });
+
+      for (let i = 0; i < COLORS.length; i++) {
+        COLORS[i].n = dict['t' + (i + 1)];
+      }
+
+      rebuildForms();
+      if (!running) {
+        drawIdle();
+      } else {
+        updateRightPanel(_frameCount);
+        _updateBodyAnaTable();
+        _updateEnergyBreakdown();
+      }
+    }
 
     // ── INIT ──────────────────────────────────────────
     window.addEventListener('DOMContentLoaded', () => {
@@ -1234,6 +1654,19 @@
       window.addEventListener('mouseup', () => drag = false);
       cv.addEventListener('wheel', e => { e.preventDefault(); doZoom(e.deltaY < 0 ? 1.1 : 0.9); }, { passive: false });
 
+      // Drag & drop dropzone
+      cv.addEventListener('dragover', e => {
+        e.preventDefault();
+        e.dataTransfer.dropEffect = 'move';
+      });
+      cv.addEventListener('drop', e => {
+        e.preventDefault();
+        const index = +e.dataTransfer.getData('text/plain');
+        if (!isNaN(index)) {
+          placeBodyAt(index, e.clientX, e.clientY);
+        }
+      });
+
       // Keyboard shortcuts
       window.addEventListener('keydown', e => {
         if (e.code === 'Space') { e.preventDefault(); running ? togglePause() : startSim(); }
@@ -1243,7 +1676,12 @@
       });
 
       drawIdle();
-      notify('MomentumX gati! Shtyp ▶ STARTIM ose Space.');
+      notify(T[currentLang].notifReady);
+
+      // Display session username
+      if (sessionUser) {
+        document.getElementById('userNameEl').textContent = '👤 ' + sessionUser;
+      }
     });
 
     function clockTick() {
@@ -1271,68 +1709,122 @@
     function rebuildForms() {
       const n = +document.getElementById('bodyCount').value;
       const def = [
-        { m: 5, v: 8, d: 0, mu: 0.2, dist: 160 },
-        { m: 3, v: 0, d: 180, mu: 0.2, dist: 160 },
-        { m: 4, v: 5, d: 90, mu: 0.15, dist: 160 },
-        { m: 2, v: 6, d: 270, mu: 0.25, dist: 160 },
-        { m: 3, v: 4, d: 45, mu: 0.2, dist: 160 },
+        { m: 5, v: 8, d: 0, mu: 0.2 },
+        { m: 3, v: 0, d: 180, mu: 0.2 },
+        { m: 4, v: 5, d: 90, mu: 0.15 },
+        { m: 2, v: 6, d: 270, mu: 0.25 },
+        { m: 3, v: 4, d: 45, mu: 0.2 },
       ];
       let h = '';
+      const dict = T[currentLang];
       for (let i = 0; i < n; i++) {
         const col = COLORS[i], d = def[i];
-        h += `<div class="bcard">
+        h += `<style>#bcard-${i} { border: 1px solid ${col.c}22; transition: border-color 0.2s, box-shadow 0.2s; } #bcard-${i}:hover { border-color: ${col.c}55; box-shadow: 0 0 0 1px ${col.c}18; }</style>
+    <div class="bcard" id="bcard-${i}">
       <div class="bcard-h">
         <div class="bball" style="color:${col.c};border-color:${col.c};box-shadow:0 0 7px ${col.c}"></div>
         <span style="color:${col.c}">${col.n}</span>
       </div>
       <div class="bcard-b">
         <div class="g2">
-          <div><label class="fl">MASA (kg)</label><input type="number" id="m${i}" value="${d.m}" step="0.5" min="0.1"></div>
-          <div><label class="fl">SHPEJTËSIA (m/s)</label><input type="number" id="v${i}" value="${d.v}" step="1" min="0"></div>
-          <div><label class="fl">DREJTIMI (°)</label><input type="number" id="dir${i}" value="${d.d}" step="5"></div>
-          <div><label class="fl">FËRKIMI μ</label><input type="number" id="mu${i}" value="${d.mu}" step="0.01" min="0" max="1"></div>
+          <div><label class="fl">${dict.masa}</label><input type="number" id="m${i}" value="${d.m}" step="0.5" min="0.1"></div>
+          <div><label class="fl">${dict.shpejtesia}</label><input type="number" id="v${i}" value="${d.v}" step="1" min="0"></div>
+          <div><label class="fl">${dict.drejtimi}</label><input type="number" id="dir${i}" value="${d.d}" step="5"></div>
+          <div><label class="fl">${dict.ferkimi}</label><input type="number" id="mu${i}" value="${d.mu}" step="0.01" min="0" max="1"></div>
         </div>
-        <label class="fl" style="margin-top:3px;">DISTANCA FILLESTARE (px)</label>
-        <input type="number" id="dist${i}" value="${d.dist}" step="20" min="30">
       </div>
     </div>`;
       }
       document.getElementById('bodyForms').innerHTML = h;
+
+      bodyPositions = {};
+      rebuildStagingBalls(n);
+    }
+
+    // ── DRAG & DROP POSITIONING ──────────────────────
+    function rebuildStagingBalls(n) {
+      const area = document.getElementById('stagingArea');
+      if (!area) return;
+      // keep the label, remove old balls
+      area.querySelectorAll('.staging-ball').forEach(el => el.remove());
+
+      for (let i = 0; i < n; i++) {
+        const ball = document.createElement('div');
+        ball.className = 'staging-ball';
+        ball.id = 'stage' + i;
+        ball.style.background = COLORS[i].c;
+        ball.style.color = COLORS[i].c;
+        ball.textContent = 'T' + (i + 1);
+        ball.draggable = true;
+        ball.dataset.index = i;
+        area.appendChild(ball);
+      }
+      attachDragHandlers();
+
+      // Update label translation
+      const lbl = area.querySelector('.staging-label');
+      if (lbl) {
+        lbl.textContent = T[currentLang].stagingLabel;
+      }
+    }
+
+    function attachDragHandlers() {
+      document.querySelectorAll('.staging-ball').forEach(ball => {
+        ball.addEventListener('dragstart', e => {
+          e.dataTransfer.setData('text/plain', ball.dataset.index);
+          e.dataTransfer.effectAllowed = 'move';
+        });
+      });
+    }
+
+    function placeBodyAt(index, clientX, clientY) {
+      const rect = cv.getBoundingClientRect();
+      const sx = clientX - rect.left;
+      const sy = clientY - rect.top;
+
+      const x = (sx - panX) / zoomLvl;
+      const y = (sy - panY) / zoomLvl;
+
+      bodyPositions[index] = { x, y };
+
+      const ball = document.getElementById('stage' + index);
+      if (ball) ball.classList.add('placed');
+
+      notify(`✓ ${T[currentLang].t1.replace(' 1', ' ') + (index + 1)} ${T[currentLang].notifStagingPlace}`);
+
+      if (!running) drawIdle();
+      drawPlacedPreview();
+    }
+
+    function drawPlacedPreview() {
+      if (running) return;
+      drawIdle();
     }
 
     // ── BUILD BODIES ─────────────────────────────────
     function buildBodies() {
       const n = +document.getElementById('bodyCount').value;
-      const baseAngleDeg = +document.getElementById('collAngle').value;
-      const W = cv.width, H = cv.height;
-      const cx = W / 2, cy = H / 2;
-      const spread = (2 * Math.PI) / n;
-
       bodies = [];
+
       for (let i = 0; i < n; i++) {
         const m = +document.getElementById('m' + i).value || 1;
         const v = +document.getElementById('v' + i).value || 0;
         const dirDeg = +document.getElementById('dir' + i).value || 0;
         const mu = +document.getElementById('mu' + i).value || 0.1;
-        const dist = +document.getElementById('dist' + i).value || 150;
 
-        // FIX #10 & #11: use actual user direction, not body position angle
-        const vAngle = (dirDeg * Math.PI / 180);          // real velocity direction
-        const posAngle = spread * i + (baseAngleDeg * Math.PI / 180) + Math.PI; // start from opposite side
+        // use the dragged position, or fall back to a default if not placed
+        const pos = bodyPositions[i] || { x: cv.width / 2 + (i * 60 - 60), y: cv.height / 2 };
 
-        const sx = cx + Math.cos(posAngle) * dist;
-        const sy = cy + Math.sin(posAngle) * dist;
-
+        const vAngle = dirDeg * Math.PI / 180;
         const vx = v * Math.cos(vAngle);
         const vy = v * Math.sin(vAngle);
 
-        // Safety check #12
-        if (!isFinite(sx) || !isFinite(sy) || !isFinite(vx) || !isFinite(vy)) continue;
+        if (!isFinite(pos.x) || !isFinite(pos.y) || !isFinite(vx) || !isFinite(vy)) continue;
 
         bodies.push({
           id: i, m, mu,
-          x: sx, y: sy, vx, vy,
-          ox: sx, oy: sy,
+          x: pos.x, y: pos.y, vx, vy,
+          ox: pos.x, oy: pos.y,
           r: Math.max(12, Math.min(26, m * 3.2)),
           col: COLORS[i].c,
           trail: [], hasStopped: false, stopT: null,
@@ -1348,16 +1840,23 @@
 
     // ── START ────────────────────────────────────────
     function startSim() {
+      const n = +document.getElementById('bodyCount').value;
+      const placedCount = Object.keys(bodyPositions).length;
+      if (placedCount < n) {
+        notify(`⚠ ${T[currentLang].notifStagingMissing} (${placedCount}/${n})`);
+        return;
+      }
+
       if (raf) cancelAnimationFrame(raf);
       running = true; paused = false;
       simTime = 0; collCount = 0; shakeAmt = 0;
-      parts = []; chartP = []; chartV = []; chartEk = [];
+      parts = []; rings = []; chartP = []; chartV = []; chartEk = [];
       initEk = null; lastTs = null; fpsArr = [];                // FIX #4
       document.getElementById('collN').textContent = '0';
-      document.getElementById('btnPause').textContent = '⏸ PAUSE';
+      document.getElementById('btnPause').textContent = T[currentLang].pause;
 
       buildBodies();
-      if (bodies.length === 0) { notify('⚠ Nuk ka trupa!'); return; }
+      if (bodies.length === 0) { notify(T[currentLang].notifNoBodies); return; }
 
       const e = +document.getElementById('eSlider').value;
       window._e = e;
@@ -1375,11 +1874,10 @@
       initEk = totalEk();
       _updateBodyAnaTable();
       _updateEnergyBreakdown();
-      notify('▶ Simulimi filloi! [Space=pause, R=reset]');
+      notify(T[currentLang].notifStart);
       raf = requestAnimationFrame(loop);
     }
 
-    let _frameCount = 0;
     // ── MAIN LOOP ────────────────────────────────────
     function loop(ts) {
       if (!running) { return; }
@@ -1508,6 +2006,7 @@
           col: Math.random() > .5 ? c1 : c2, life: 1, sz: 1 + Math.random() * 3
         });
       }
+      rings.push({ x, y, r: 5, maxR: 80, col: c1, life: 1 });
     }
     function updateParticles(dt) {
       for (let i = parts.length - 1; i >= 0; i--) {
@@ -1516,6 +2015,11 @@
         p.vx *= 0.93; p.vy *= 0.93;
         p.life -= dt * 1.4;
         if (p.life <= 0) parts.splice(i, 1);
+      }
+      for (let i = rings.length - 1; i >= 0; i--) {
+        const rg = rings[i];
+        rg.r += 200 * dt; rg.life -= dt * 2;
+        if (rg.life <= 0) rings.splice(i, 1);
       }
     }
 
@@ -1561,6 +2065,13 @@
         ctx.fillStyle = p.col; ctx.shadowBlur = 8; ctx.shadowColor = p.col;
         ctx.beginPath(); ctx.arc(p.x, p.y, p.sz, 0, Math.PI * 2); ctx.fill();
         ctx.restore();
+      }
+
+      for (const rg of rings) {
+        ctx.save(); ctx.globalAlpha = Math.max(0, rg.life * 0.6);
+        ctx.strokeStyle = rg.col; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.arc(rg.x, rg.y, rg.r, 0, Math.PI * 2);
+        ctx.stroke(); ctx.restore();
       }
 
       // Bodies + vectors
@@ -1660,11 +2171,38 @@
       // Text
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       ctx.fillStyle = 'rgba(0,220,255,0.75)'; ctx.font = 'bold 15px monospace';
-      ctx.fillText('MOMENTUMX PHYSICS SIMULATOR', cx2, cy2 - 18);
+      ctx.fillText(T[currentLang].idleTitle, cx2, cy2 - 18);
       ctx.fillStyle = 'rgba(0,220,255,0.3)'; ctx.font = '11px monospace';
-      ctx.fillText('Vendos parametrat → Shtyp  ▶ STARTIM', cx2, cy2 + 10);
+      ctx.fillText(T[currentLang].idleSub, cx2, cy2 + 10);
       ctx.font = '10px monospace'; ctx.fillStyle = 'rgba(0,220,255,0.15)';
-      ctx.fillText('Drag = lëviz  |  Scroll = zoom  |  Space = pause  |  R = reset', cx2, cy2 + 60);
+      ctx.fillText(T[currentLang].idleControls, cx2, cy2 + 60);
+
+      // Draw placed body ghost markers if any
+      if (Object.keys(bodyPositions).length > 0) {
+        ctx.save();
+        ctx.scale(zoomLvl, zoomLvl);
+        ctx.translate(panX / zoomLvl, panY / zoomLvl);
+
+        for (const idxStr in bodyPositions) {
+          const idx = +idxStr;
+          const pos = bodyPositions[idx];
+          const col = COLORS[idx].c;
+
+          ctx.fillStyle = col;
+          ctx.shadowBlur = 16;
+          ctx.shadowColor = col;
+          ctx.beginPath();
+          ctx.arc(pos.x, pos.y, 14, 0, Math.PI * 2);
+          ctx.fill();
+
+          ctx.fillStyle = '#000';
+          ctx.font = 'bold 10px monospace';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('T' + (idx + 1), pos.x, pos.y);
+        }
+        ctx.restore();
+      }
     }
 
     // ── RIGHT PANEL ───────────────────────────────────
@@ -1684,6 +2222,7 @@
       const p = totalP(), ek = totalEk();
       if (initEk === null && ek > 0) initEk = ek;
       const lost = Math.max(0, (initEk || ek) - ek);
+      const dict = T[currentLang];
 
       document.getElementById('pCur').textContent = p.toFixed(3) + ' kg·m/s';
       document.getElementById('ekTot').textContent = ek.toFixed(3) + ' J';
@@ -1726,40 +2265,40 @@
             const collEk = (.5 * b.m * collSpd ** 2).toFixed(3);
             postCollHtml = `
         <div style="margin-top:6px;padding-top:6px;border-top:1px solid rgba(255,255,255,0.07);">
-          <div style="font-size:9px;letter-spacing:1px;color:var(--txt3);margin-bottom:4px;text-transform:uppercase;">📍 Pas Përplasjes</div>
+          <div style="font-size:9px;letter-spacing:1px;color:var(--txt3);margin-bottom:4px;text-transform:uppercase;">${dict.postColl}</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;">
-            <div style="font-size:9px;color:var(--txt2);">v pas perplasjes</div>
+            <div style="font-size:9px;color:var(--txt2);">${dict.vPost}</div>
             <div style="font-size:10px;font-family:monospace;color:${b.col};font-weight:700;">${collSpd.toFixed(2)} m/s</div>
-            <div style="font-size:9px;color:var(--txt2);">E_k pas perpl.</div>
+            <div style="font-size:9px;color:var(--txt2);">${dict.ekPost}</div>
             <div style="font-size:10px;font-family:monospace;color:#ffdd00;">${collEk} J</div>
-            <div style="font-size:9px;color:var(--txt2);">t_ndalim pas perpl.</div>
+            <div style="font-size:9px;color:var(--txt2);">${dict.tStopPost}</div>
             <div style="font-size:10px;font-family:monospace;color:#00ff99;font-weight:700;">${tStopPost.toFixed(2)} s</div>
-            <div style="font-size:9px;color:var(--txt2);">s_ndalim pas perpl.</div>
+            <div style="font-size:9px;color:var(--txt2);">${dict.sStopPost}</div>
             <div style="font-size:10px;font-family:monospace;color:#ff7700;font-weight:700;">${sStopPost.toFixed(0)} px</div>
-            <div style="font-size:9px;color:var(--txt2);">d_pershkruar pas perpl.</div>
+            <div style="font-size:9px;color:var(--txt2);">${dict.dPost}</div>
             <div style="font-size:10px;font-family:monospace;color:#ff2080;font-weight:700;">${pcd} px</div>
-            <div style="font-size:9px;color:var(--txt2);">kohë nga perplasja</div>
+            <div style="font-size:9px;color:var(--txt2);">${dict.tSinceColl}</div>
             <div style="font-size:10px;font-family:monospace;color:var(--txt2);">${elapsedSinceCollision} s</div>
           </div>
         </div>`;
           } else if (!b.hadCollision) {
-            postCollHtml = `<div style="margin-top:5px;font-size:9px;color:var(--txt3);font-style:italic;">— nuk ka patur përplasje ende —</div>`;
+            postCollHtml = `<div style="margin-top:5px;font-size:9px;color:var(--txt3);font-style:italic;">${dict.noCollYet}</div>`;
           }
           sdHtml += `
     <div style="border-radius:9px;background:rgba(0,10,24,0.6);border:1px solid ${b.col}22;padding:9px 11px;overflow:hidden;">
       <div style="display:flex;align-items:center;gap:7px;margin-bottom:7px;">
         <div style="width:9px;height:9px;border-radius:50%;background:${b.col};box-shadow:0 0 7px ${b.col};flex-shrink:0;"></div>
-        <span style="font-size:11px;font-weight:800;color:${b.col};letter-spacing:1px;">TRUPI ${b.id + 1}</span>
-        ${b.hasStopped ? '<span style="font-size:8px;padding:1px 6px;border-radius:8px;background:rgba(255,32,128,0.15);border:1px solid rgba(255,32,128,0.3);color:#ff2080;margin-left:auto;">NDALUR</span>' : '<span style="font-size:8px;padding:1px 6px;border-radius:8px;background:rgba(0,255,153,0.1);border:1px solid rgba(0,255,153,0.25);color:#00ff99;margin-left:auto;">LËVIZ</span>'}
+        <span style="font-size:11px;font-weight:800;color:${b.col};letter-spacing:1px;">${dict.body} ${b.id + 1}</span>
+        ${b.hasStopped ? `<span style="font-size:8px;padding:1px 6px;border-radius:8px;background:rgba(255,32,128,0.15);border:1px solid rgba(255,32,128,0.3);color:#ff2080;margin-left:auto;">${dict.stopped}</span>` : `<span style="font-size:8px;padding:1px 6px;border-radius:8px;background:rgba(0,255,153,0.1);border:1px solid rgba(0,255,153,0.25);color:#00ff99;margin-left:auto;">${dict.moving}</span>`}
       </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:3px;">
-        <div style="font-size:9px;color:var(--txt2);">|v| aktuale</div>
+        <div style="font-size:9px;color:var(--txt2);">${dict.vAct}</div>
         <div style="font-size:10px;font-family:monospace;color:${b.col};font-weight:700;">${spd.toFixed(2)} m/s</div>
-        <div style="font-size:9px;color:var(--txt2);">t_ndalim (nga tani)</div>
+        <div style="font-size:9px;color:var(--txt2);">${dict.tStopAct}</div>
         <div style="font-size:10px;font-family:monospace;color:#00ff99;font-weight:700;">${tStop.toFixed(2)} s</div>
-        <div style="font-size:9px;color:var(--txt2);">s_ndalim (nga tani)</div>
+        <div style="font-size:9px;color:var(--txt2);">${dict.sStopAct}</div>
         <div style="font-size:10px;font-family:monospace;color:#ff7700;font-weight:700;">${sDist.toFixed(0)} px</div>
-        ${b.stopT !== null ? `<div style="font-size:9px;color:var(--txt2);">ndalur në t=</div><div style="font-size:10px;font-family:monospace;color:#ff2080;">${b.stopT.toFixed(2)} s</div>` : ''}
+        ${b.stopT !== null ? `<div style="font-size:9px;color:var(--txt2);">${dict.stoppedAt}</div><div style="font-size:10px;font-family:monospace;color:#ff2080;">${b.stopT.toFixed(2)} s</div>` : ''}
       </div>
       ${postCollHtml}
     </div>`;
@@ -1768,16 +2307,16 @@
   <!-- LEGEND -->
   <div style="margin-top:10px;padding:9px 11px;border-radius:9px;background:rgba(0,220,255,0.03);border:1px solid rgba(0,220,255,0.1);">
     <div style="font-size:9px;font-weight:700;letter-spacing:2px;color:var(--cyan);margin-bottom:7px;text-transform:uppercase;display:flex;align-items:center;gap:5px;">
-      <span style="display:inline-block;width:3px;height:10px;background:var(--cyan);border-radius:2px;"></span>LEGJENDA
+      <span style="display:inline-block;width:3px;height:10px;background:var(--cyan);border-radius:2px;"></span>${dict.legend}
     </div>
     <div style="display:grid;grid-template-columns:auto 1fr;gap:3px 8px;font-size:9px;line-height:1.8;">
-      <span style="color:#00ff99;font-family:monospace;font-weight:700;">t_ndalim</span><span style="color:var(--txt2);">koha derisa trupi ndalon (nga pozicioni aktual)</span>
-      <span style="color:#ff7700;font-family:monospace;font-weight:700;">s_ndalim</span><span style="color:var(--txt2);">distanca e pershkruar derisa ndalon (nga pozicioni aktual)</span>
-      <span style="color:#ff2080;font-family:monospace;font-weight:700;">d_pershkruar</span><span style="color:var(--txt2);">distanca totale e pershkruar pas perplasjes se fundit</span>
-      <span style="color:var(--cyan);font-family:monospace;font-weight:700;">t_ndalim pas perpl.</span><span style="color:var(--txt2);">koha e ndalimit duke u llogaritur nga momenti i perplasjes</span>
-      <span style="color:#ff7700;font-family:monospace;font-weight:700;">s_ndalim pas perpl.</span><span style="color:var(--txt2);">distanca teorike e ndalimit nga pika e perplasjes</span>
-      <span style="color:#ffdd00;font-family:monospace;font-weight:700;">E_k pas perpl.</span><span style="color:var(--txt2);">energjia kinetike e trupit menjehere pas perplasjes</span>
-      <span style="color:var(--txt2);font-family:monospace;">Formula:</span><span style="color:var(--txt3);">t = v/a · s = v²/(2a) · a = μ·g</span>
+      <span style="color:#00ff99;font-family:monospace;font-weight:700;">t_ndalim</span><span style="color:var(--txt2);">${dict.legendStopTDesc}</span>
+      <span style="color:#ff7700;font-family:monospace;font-weight:700;">s_ndalim</span><span style="color:var(--txt2);">${dict.legendStopSDesc}</span>
+      <span style="color:#ff2080;font-family:monospace;font-weight:700;">d_pershkruar</span><span style="color:var(--txt2);">${dict.legendPostDDesc}</span>
+      <span style="color:var(--cyan);font-family:monospace;font-weight:700;">t_ndalim pas perpl.</span><span style="color:var(--txt2);">${dict.legendPostStopTDesc}</span>
+      <span style="color:#ff7700;font-family:monospace;font-weight:700;">s_ndalim pas perpl.</span><span style="color:var(--txt2);">${dict.legendPostStopSDesc}</span>
+      <span style="color:#ffdd00;font-family:monospace;font-weight:700;">E_k pas perpl.</span><span style="color:var(--txt2);">${dict.legendPostEkDesc}</span>
+      <span style="color:var(--txt2);font-family:monospace;">${dict.formulaLbl}</span><span style="color:var(--txt3);">t = v/a · s = v²/(2a) · a = μ·g</span>
     </div>
   </div>`;
         document.getElementById('stopData').innerHTML = sdHtml;
@@ -1825,6 +2364,17 @@
       const range = mx - mn || 1;
 
       function yOf(v) { return H - ((v - mn) / range) * H * .78 - H * .10; }
+
+      const bgGr = ct.createLinearGradient(0, 0, 0, H);
+      bgGr.addColorStop(0, 'rgba(0,8,20,0.9)');
+      bgGr.addColorStop(1, 'rgba(0,4,12,0.6)');
+      ct.fillStyle = bgGr;
+      ct.fillRect(0, 0, W, H);
+      /* Shto tick marks me vlera: */
+      ct.fillStyle = hex2rgba(color, 0.4);
+      ct.font = '8px Inter, monospace';
+      ct.fillText(mx.toFixed(1), 3, 9);
+      ct.fillText(((mx + mn) / 2).toFixed(1), 3, H / 2 + 4);
 
       // Grid lines
       ct.strokeStyle = 'rgba(255,255,255,0.04)'; ct.lineWidth = .5;
@@ -1880,6 +2430,7 @@
     function _updateBodyAnaTable() {
       const el = document.getElementById('bodyAnaTbl');
       if (!el || bodies.length === 0) { return; }
+      const dict = T[currentLang];
 
       const SCALE = 55; // px → m conversion factor used in physics step (vx*dt*55)
       let rows = '';
@@ -1959,20 +2510,20 @@
     <tbody>${rows}</tbody>
   </table>
   <div style="margin-top:8px;padding:8px 10px;border-radius:8px;background:rgba(0,220,255,0.03);border:1px solid rgba(0,220,255,0.09);">
-    <div style="font-size:9px;font-weight:700;color:var(--cyan);letter-spacing:2px;margin-bottom:5px;">LEGJENDA KOLONAVE</div>
+    <div style="font-size:9px;font-weight:700;color:var(--cyan);letter-spacing:2px;margin-bottom:5px;">${dict.legendTitle}</div>
     <div style="display:grid;grid-template-columns:auto 1fr auto 1fr;gap:2px 10px;font-size:8.5px;line-height:1.9;">
-      <span style="color:var(--cyan);font-family:monospace;">θ</span><span style="color:var(--txt3);">drejtimi i lëvizjes</span>
-      <span style="color:var(--cyan);font-family:monospace;">F_f</span><span style="color:var(--txt3);">forca e fërkimit (μ·m·g)</span>
-      <span style="color:var(--cyan);font-family:monospace;">t_stop</span><span style="color:var(--txt3);">koha ndalim nga pozicioni aktual</span>
-      <span style="color:var(--cyan);font-family:monospace;">s_stop</span><span style="color:var(--txt3);">distanca ndalim nga pozicioni aktual (m)</span>
-      <span style="color:var(--cyan);font-family:monospace;">d_trav</span><span style="color:var(--txt3);">distanca e pershkruar nga nisja</span>
-      <span style="color:var(--cyan);font-family:monospace;">t_el</span><span style="color:var(--txt3);">koha e kaluar gjithsej</span>
-      <span style="color:var(--cyan);font-family:monospace;">t_coll</span><span style="color:var(--txt3);">koha kur trupi u ndalua plotesisht</span>
-      <span style="color:#00ff99;font-family:monospace;">v_pas</span><span style="color:var(--txt3);">shpejtesia menjehere pas perplasjes</span>
-      <span style="color:#ffdd00;font-family:monospace;">E_k_pas</span><span style="color:var(--txt3);">energjia kinetike pas perplasjes</span>
-      <span style="color:#00ff99;font-family:monospace;">t_stop_pas</span><span style="color:var(--txt3);">koha e ndalimit te llogaritur nga pika e perplasjes</span>
-      <span style="color:#ff7700;font-family:monospace;">s_stop_pas</span><span style="color:var(--txt3);">distanca teorike e ndalimit nga pika e perplasjes (px)</span>
-      <span style="color:#ff2080;font-family:monospace;">d_pas</span><span style="color:var(--txt3);">distanca reale e pershkruar pas perplasjes (px)</span>
+      <span style="color:var(--cyan);font-family:monospace;">θ</span><span style="color:var(--txt3);">${dict.thetaDesc}</span>
+      <span style="color:var(--cyan);font-family:monospace;">F_f</span><span style="color:var(--txt3);">${dict.ffDesc}</span>
+      <span style="color:var(--cyan);font-family:monospace;">t_stop</span><span style="color:var(--txt3);">${dict.tStopDesc}</span>
+      <span style="color:var(--cyan);font-family:monospace;">s_stop</span><span style="color:var(--txt3);">${dict.sStopDesc}</span>
+      <span style="color:var(--cyan);font-family:monospace;">d_trav</span><span style="color:var(--txt3);">${dict.dTravDesc}</span>
+      <span style="color:var(--cyan);font-family:monospace;">t_el</span><span style="color:var(--txt3);">${dict.tElDesc}</span>
+      <span style="color:var(--cyan);font-family:monospace;">t_coll</span><span style="color:var(--txt3);">${dict.tCollDesc}</span>
+      <span style="color:#00ff99;font-family:monospace;">v_pas</span><span style="color:var(--txt3);">${dict.vPasDesc}</span>
+      <span style="color:#ffdd00;font-family:monospace;">E_k_pas</span><span style="color:var(--txt3);">${dict.ekPasDesc}</span>
+      <span style="color:#00ff99;font-family:monospace;">t_stop_pas</span><span style="color:var(--txt3);">${dict.tStopPasDesc}</span>
+      <span style="color:#ff7700;font-family:monospace;">s_stop_pas</span><span style="color:var(--txt3);">${dict.sStopPasDesc}</span>
+      <span style="color:#ff2080;font-family:monospace;">d_pas</span><span style="color:var(--txt3);">${dict.dPasDesc}</span>
     </div>
   </div>`;
     }
@@ -1980,6 +2531,7 @@
     function _updateEnergyBreakdown() {
       const el = document.getElementById('energyBreakdown');
       if (!el || bodies.length === 0) return;
+      const dict = T[currentLang];
 
       const ekNow = totalEk();
       const ekInit = initEk || ekNow || 1;
@@ -1991,12 +2543,12 @@
 
       // System totals with bars
       const rows = [
-        { lbl: 'E_k fillestare', val: ekInit, color: '#00dcff', unit: 'J' },
-        { lbl: 'E_k aktuale', val: ekNow, color: '#00ff99', unit: 'J' },
-        { lbl: 'E_k e humbur', val: ekLost, color: '#ff2080', unit: 'J' },
-        { lbl: 'E_fërkimi (ΔE)', val: ekFric, color: '#ff7700', unit: 'J' },
-        { lbl: 'p_total aktual', val: pNow, color: '#ffdd00', unit: 'kg·m/s' },
-        { lbl: 'p_total fillestar', val: initP, color: '#00dcff', unit: 'kg·m/s' },
+        { lbl: currentLang === 'sq' ? 'E_k fillestare' : 'Initial E_k', val: ekInit, color: '#00dcff', unit: 'J' },
+        { lbl: currentLang === 'sq' ? 'E_k aktuale' : 'Current E_k', val: ekNow, color: '#00ff99', unit: 'J' },
+        { lbl: currentLang === 'sq' ? 'E_k e humbur' : 'Energy lost', val: ekLost, color: '#ff2080', unit: 'J' },
+        { lbl: currentLang === 'sq' ? 'E_fërkimi (ΔE)' : 'Friction E (ΔE)', val: ekFric, color: '#ff7700', unit: 'J' },
+        { lbl: currentLang === 'sq' ? 'p_total aktual' : 'Current p_total', val: pNow, color: '#ffdd00', unit: 'kg·m/s' },
+        { lbl: currentLang === 'sq' ? 'p_total fillestar' : 'Initial p_total', val: initP, color: '#00dcff', unit: 'kg·m/s' },
       ];
       const maxVal = Math.max(...rows.map(r => r.val), 0.001);
       for (const r of rows) {
@@ -2009,7 +2561,7 @@
       }
 
       // Per-body energy breakdown
-      html += `<div style="margin-top:10px;margin-bottom:5px;font-size:9px;color:var(--txt2);letter-spacing:1px;text-transform:uppercase;">Energjia sipas trupit</div>`;
+      html += `<div style="margin-top:10px;margin-bottom:5px;font-size:9px;color:var(--txt2);letter-spacing:1px;text-transform:uppercase;">${currentLang === 'sq' ? 'Energjia sipas trupit' : 'Energy by body'}</div>`;
       for (const b of bodies) {
         const spd = Math.sqrt(b.vx * b.vx + b.vy * b.vy);
         const ek = isFinite(.5 * b.m * spd * spd) ? .5 * b.m * spd * spd : 0;
@@ -2025,7 +2577,7 @@
       <span class="ebar-val" style="color:${b.col}">${ek.toFixed(3)} J</span>
     </div>
     <div class="ebar-wrap">
-      <span class="ebar-lbl" style="color:${b.col};opacity:.6">T${b.id + 1} W_fërkimi</span>
+      <span class="ebar-lbl" style="color:${b.col};opacity:.6">T${b.id + 1} ${currentLang === 'sq' ? 'W_fërkimi' : 'W_friction'}</span>
       <div class="ebar"><div class="ebar-fill" style="width:${Math.min(100, (Wfric / Math.max(ekInit, .001)) * 100).toFixed(1)}%;background:${b.col};opacity:.4;"></div></div>
       <span class="ebar-val" style="color:${b.col};opacity:.7">${Wfric.toFixed(3)} J</span>
     </div>`;
@@ -2046,13 +2598,23 @@
           const p0 = b.m * spd0;
           bodyLines += `<br><b style="color:${b.col}">T${b.id + 1}</b>: m=<b>${b.m} kg</b>, v₀=<b>${spd0.toFixed(2)} m/s</b>, p₀=<b>${p0.toFixed(3)} kg·m/s</b>, E_k₀=<b>${ek0.toFixed(3)} J</b>, μ=<b>${b.mu}</b>`;
         }
-        el.innerHTML = `<b>Sistemi u inicializua</b> me <b>${bodies.length} trupa</b>.${bodyLines}<br><br>
+        if (currentLang === 'sq') {
+          el.innerHTML = `<b>Sistemi u inicializua</b> me <b>${bodies.length} trupa</b>.${bodyLines}<br><br>
 <b>Momenti total fillestar:</b> ${initP.toFixed(4)} kg·m/s<br>
 <b>Energjia kinetike fillestare:</b> ${(initEk || 0).toFixed(4)} J<br>
 <b>Koef. rigjenerimi:</b> e = ${e}<br><br>
 <b>Ligji i ruajtjes së momentit:</b> Σp_i = Σp_f<br>
 <b>Nxitimi i fërkimit:</b> a = μ·g [m/s²] — varet nga sipërfaqja<br><br>
 <i>Shkurtësa: Space=pause · R=reset · +/-=zoom</i>`;
+        } else {
+          el.innerHTML = `<b>System initialized</b> with <b>${bodies.length} bodies</b>.${bodyLines}<br><br>
+<b>Initial total momentum:</b> ${initP.toFixed(4)} kg·m/s<br>
+<b>Initial kinetic energy:</b> ${(initEk || 0).toFixed(4)} J<br>
+<b>Restitution coeff:</b> e = ${e}<br><br>
+<b>Law of conservation of momentum:</b> Σp_i = Σp_f<br>
+<b>Friction deceleration:</b> a = μ·g [m/s²] — depends on surface<br><br>
+<i>Shortcuts: Space=pause · R=reset · +/-=zoom</i>`;
+        }
 
       } else if (phase === 'coll') {
         const spd1 = Math.sqrt(b1.vx * b1.vx + b1.vy * b1.vy);
@@ -2062,44 +2624,60 @@
         const ek1 = .5 * b1.m * spd1 * spd1, ek2 = .5 * b2.m * spd2 * spd2;
         const pTot = totalP(), ekTot2 = totalEk();
         const ekLost2 = Math.max(0, (initEk || ekTot2 + 1) - ekTot2);
-        el.innerHTML = `<b>PËRPLASJE #${collCount}</b> — t = <b>${simTime.toFixed(3)} s</b><br><br>
+        if (currentLang === 'sq') {
+          el.innerHTML = `<b>PËRPLASJE #${collCount}</b> — t = <b>${simTime.toFixed(3)} s</b><br><br>
 <b style="color:${b1.col}">T${b1.id + 1}</b>: m=${b1.m} kg · |v|=${spd1.toFixed(3)} m/s · p=${p1.toFixed(3)} kg·m/s · E_k=${ek1.toFixed(3)} J<br>
 <b style="color:${b2.col}">T${b2.id + 1}</b>: m=${b2.m} kg · |v|=${spd2.toFixed(3)} m/s · p=${p2.toFixed(3)} kg·m/s · E_k=${ek2.toFixed(3)} J<br><br>
 <b>v_relative</b> = ${relSpd.toFixed(3)} m/s<br>
 <b>Impuls J</b> = (1+e)·μᵣ·v_rel<br><br>
 ${e >= 1 ? '✓ <b>Elastike</b>: E_k ruhet plotësisht (Δ=0 J)' :
-            e === 0 ? '⚡ <b>Perf. Inelastike</b>: trupa bashkohen, Δ E_k max' :
-              `⚙ <b>Pjesërisht Inelastike</b> (e=${e}): ~${((1 - e * e) * 100).toFixed(0)}% e E_k humbët`}<br><br>
+              e === 0 ? '⚡ <b>Perf. Inelastike</b>: trupa bashkohen, Δ E_k max' :
+                `⚙ <b>Pjesërisht Inelastike</b> (e=${e}): ~${((1 - e * e) * 100).toFixed(0)}% e E_k humbët`}<br><br>
 <b>p_total tani:</b> ${pTot.toFixed(4)} kg·m/s<br>
 <b>E_k tani:</b> ${ekTot2.toFixed(4)} J<br>
 <b>ΔE_k (humbur):</b> ${ekLost2.toFixed(4)} J`;
+        } else {
+          el.innerHTML = `<b>COLLISION #${collCount}</b> — t = <b>${simTime.toFixed(3)} s</b><br><br>
+<b style="color:${b1.col}">T${b1.id + 1}</b>: m=${b1.m} kg · |v|=${spd1.toFixed(3)} m/s · p=${p1.toFixed(3)} kg·m/s · E_k=${ek1.toFixed(3)} J<br>
+<b style="color:${b2.col}">T${b2.id + 1}</b>: m=${b2.m} kg · |v|=${spd2.toFixed(3)} m/s · p=${p2.toFixed(3)} kg·m/s · E_k=${ek2.toFixed(3)} J<br><br>
+<b>v_relative</b> = ${relSpd.toFixed(3)} m/s<br>
+<b>Impulse J</b> = (1+e)·μᵣ·v_rel<br><br>
+${e >= 1 ? '✓ <b>Elastic</b>: E_k is fully conserved (Δ=0 J)' :
+              e === 0 ? '⚡ <b>Perf. Inelastic</b>: bodies merge, max Δ E_k' :
+                `⚙ <b>Partially Inelastic</b> (e=${e}): ~${((1 - e * e) * 100).toFixed(0)}% of E_k lost`}<br><br>
+<b>p_total now:</b> ${pTot.toFixed(4)} kg·m/s<br>
+<b>E_k now:</b> ${ekTot2.toFixed(4)} J<br>
+<b>ΔE_k (lost):</b> ${ekLost2.toFixed(4)} J`;
+        }
       }
     }
 
     // ── CONTROLS ─────────────────────────────────────
     function togglePause() {
-      if (!running) { notify('Fillo simulimin së pari!'); return; }
+      if (!running) { notify(T[currentLang].filloSim); return; }
       paused = !paused;
-      document.getElementById('btnPause').textContent = paused ? '▶ VAZHDO' : '⏸ PAUSE';
-      notify(paused ? '⏸ Ndërprerë' : '▶ Vazhdoi');
+      document.getElementById('btnPause').textContent = paused ? T[currentLang].vazhdo : T[currentLang].pause;
+      notify(paused ? T[currentLang].notifPause : T[currentLang].notifResume);
     }
 
     function resetSim() {
       if (raf) cancelAnimationFrame(raf);
       running = false; paused = false; simTime = 0; collCount = 0;
-      bodies = []; parts = []; chartP = []; chartV = []; chartEk = [];
+      bodies = []; parts = []; rings = []; chartP = []; chartV = []; chartEk = [];
       initEk = null; shakeAmt = 0; lastTs = null; window._e = null; _frameCount = 0;
+      bodyPositions = {};
+      rebuildStagingBalls(+document.getElementById('bodyCount').value);
       document.getElementById('collN').textContent = '0';
       document.getElementById('pInit').textContent = '—';
       document.getElementById('pCur').textContent = '—';
       document.getElementById('ekTot').textContent = '—';
       document.getElementById('eLost').textContent = '0.000 J';
       document.getElementById('bodyTbl').innerHTML = '';
-      document.getElementById('stopData').innerHTML = '<span style="color:var(--txt3);font-size:11px;">Fillo simulimin...</span>';
-      document.getElementById('anaText').textContent = 'Fillo simulimin për analizën fizike...';
-      document.getElementById('bodyAnaTbl').innerHTML = '<span style="color:var(--txt3);font-size:11px;">Fillo simulimin...</span>';
-      document.getElementById('energyBreakdown').innerHTML = '<span style="color:var(--txt3);font-size:11px;">Fillo simulimin...</span>';
-      document.getElementById('btnPause').textContent = '⏸ PAUSE';
+      document.getElementById('stopData').innerHTML = `<span style="color:var(--txt3);font-size:11px;">${T[currentLang].filloSim}</span>`;
+      document.getElementById('anaText').textContent = T[currentLang].notifNoBodiesSim;
+      document.getElementById('bodyAnaTbl').innerHTML = `<span style="color:var(--txt3);font-size:11px;">${T[currentLang].filloSim}</span>`;
+      document.getElementById('energyBreakdown').innerHTML = `<span style="color:var(--txt3);font-size:11px;">${T[currentLang].filloSim}</span>`;
+      document.getElementById('btnPause').textContent = T[currentLang].pause;
       // FIX #13
       document.getElementById('timeHud').textContent = 'T: 0.00 s';
       document.getElementById('fpsHud').textContent = '60 FPS';
@@ -2109,7 +2687,7 @@ ${e >= 1 ? '✓ <b>Elastike</b>: E_k ruhet plotësisht (Δ=0 J)' :
         if (el) { const ct = el.getContext('2d'); ct.clearRect(0, 0, el.width, el.height); }
       });
       drawIdle();
-      notify('↺ Simulimi u rivendos');
+      notify(T[currentLang].notifReset);
     }
 
     function doZoom(f) {
@@ -2145,8 +2723,8 @@ ${e >= 1 ? '✓ <b>Elastike</b>: E_k ruhet plotësisht (Δ=0 J)' :
       document.getElementById('revResBox').style.display = m === 'reverse' ? 'block' : 'none';
       const mb = document.getElementById('modeBadge');
       mb.className = 'badge ' + (m === 'forward' ? 'b-cyan' : 'b-orange');
-      mb.textContent = m === 'forward' ? '▶ FORWARD' : '◀ REVERSE';
-      notify(m === 'reverse' ? '◀ Modaliteti Reverse (llogarit gjendjen fillestare)' : '▶ Modaliteti Forward');
+      mb.textContent = m === 'forward' ? T[currentLang].fwd : T[currentLang].rev;
+      notify(m === 'reverse' ? T[currentLang].notifRevMode : T[currentLang].notifFwdMode);
     }
 
     function switchTab(name, el) {
@@ -2185,40 +2763,52 @@ ${e >= 1 ? '✓ <b>Elastike</b>: E_k ruhet plotësisht (Δ=0 J)' :
       const eki = .5 * m1 * v1i_est ** 2 + .5 * m2 * v2i_est ** 2;
       const ekLost = Math.max(0, eki - ekf);
 
-      document.getElementById('revRes').innerHTML =
-        `<b>Momenti final total:</b> ${pf.toFixed(3)} kg·m/s<br>
-<b>Drejtimi i lëvizjes:</b> ${collAngleBack.toFixed(1)}°<br><br>
-<b>Gjendja fillestare e vlerësuar:</b><br>
-• T1: v₀ ≈ <b>${isFinite(v1i_est) ? Math.abs(v1i_est).toFixed(2) : '—'} m/s</b> @ ${(+document.getElementById('revAngle1').value + 180) % 360}°<br>
-• T2: v₀ ≈ <b>${isFinite(v2i_est) ? Math.abs(v2i_est).toFixed(2) : '—'} m/s</b> @ ${(+document.getElementById('revAngle2').value + 180) % 360}°<br><br>
-Ek fillestare ≈ <b>${isFinite(eki) ? eki.toFixed(2) : '—'} J</b><br>
-Ek finale = <b>${ekf.toFixed(2)} J</b><br>
-Energji e humbur ≈ <b>${isFinite(ekLost) ? ekLost.toFixed(2) : '—'} J</b>`;
+      if (currentLang === 'sq') {
+        document.getElementById('revRes').innerHTML =
+          `<b>Momenti final total:</b> ${pf.toFixed(3)} kg·m/s<br>
+  <b>Drejtimi i lëvizjes:</b> ${collAngleBack.toFixed(1)}°<br><br>
+  <b>Gjendja fillestare e vlerësuar:</b><br>
+  • T1: v₀ ≈ <b>${isFinite(v1i_est) ? Math.abs(v1i_est).toFixed(2) : '—'} m/s</b> @ ${(+document.getElementById('revAngle1').value + 180) % 360}°<br>
+  • T2: v₀ ≈ <b>${isFinite(v2i_est) ? Math.abs(v2i_est).toFixed(2) : '—'} m/s</b> @ ${(+document.getElementById('revAngle2').value + 180) % 360}°<br><br>
+  Ek fillestare ≈ <b>${isFinite(eki) ? eki.toFixed(2) : '—'} J</b><br>
+  Ek finale = <b>${ekf.toFixed(2)} J</b><br>
+  Energji e humbur ≈ <b>${isFinite(ekLost) ? ekLost.toFixed(2) : '—'} J</b>`;
+      } else {
+        document.getElementById('revRes').innerHTML =
+          `<b>Total final momentum:</b> ${pf.toFixed(3)} kg·m/s<br>
+  <b>Direction of motion:</b> ${collAngleBack.toFixed(1)}°<br><br>
+  <b>Estimated initial state:</b><br>
+  • T1: v₀ ≈ <b>${isFinite(v1i_est) ? Math.abs(v1i_est).toFixed(2) : '—'} m/s</b> @ ${(+document.getElementById('revAngle1').value + 180) % 360}°<br>
+  • T2: v₀ ≈ <b>${isFinite(v2i_est) ? Math.abs(v2i_est).toFixed(2) : '—'} m/s</b> @ ${(+document.getElementById('revAngle2').value + 180) % 360}°<br><br>
+  Initial Ek ≈ <b>${isFinite(eki) ? eki.toFixed(2) : '—'} J</b><br>
+  Final Ek = <b>${ekf.toFixed(2)} J</b><br>
+  Energy lost ≈ <b>${isFinite(ekLost) ? ekLost.toFixed(2) : '—'} J</b>`;
+      }
 
-      notify('🔍 Reverse u llogarit!');
+      notify(T[currentLang].notifReverse);
     }
 
     // ── EXPORT (FIX #18) ──────────────────────────────
     function doExport() {
-      if (bodies.length === 0) { notify('⚠ Fillo simulimin së pari!'); return; }
-      const now = new Date().toLocaleString('sq-AL');
-      let csv = `MOMENTUMX PHYSICS SIMULATOR — EKSPORT\nData: ${now}\n`;
-      csv += `Kohëzgjatja: ${simTime.toFixed(3)} s\nPërplasje: ${collCount}\n`;
+      if (bodies.length === 0) { notify(T[currentLang].notifNoBodies); return; }
+      const now = new Date().toLocaleString(currentLang === 'sq' ? 'sq-AL' : 'en-US');
+      let csv = `${T[currentLang].expTitle}\n${T[currentLang].expDate}: ${now}\n`;
+      csv += `${T[currentLang].kohezgjatja}: ${simTime.toFixed(3)} s\n${T[currentLang].perplasje}: ${collCount}\n`;
       csv += `p_total: ${totalP().toFixed(4)} kg·m/s\nEk_total: ${totalEk().toFixed(4)} J\n\n`;
-      csv += `ID,Masa(kg),vx(m/s),vy(m/s),|v|(m/s),p(kg·m/s),Ek(J)\n`;
+      csv += `ID,${currentLang === 'sq' ? 'Masa' : 'Mass'}(kg),vx(m/s),vy(m/s),|v|(m/s),p(kg·m/s),Ek(J)\n`;
       for (const b of bodies) {
         const spd = Math.sqrt(b.vx * b.vx + b.vy * b.vy);
         csv += `T${b.id + 1},${b.m},${b.vx.toFixed(3)},${b.vy.toFixed(3)},${spd.toFixed(3)},${(b.m * spd).toFixed(3)},${(.5 * b.m * spd * spd).toFixed(3)}\n`;
       }
-      csv += `\n// Gjeneruar nga MomentumX © ${new Date().getFullYear()}`;
+      csv += `\n// Generated by MomentumX © ${new Date().getFullYear()}`;
       document.getElementById('expBox').textContent = csv;
       switchTab('ana', document.querySelectorAll('.tab')[2]);
-      notify('✓ Të dhënat u eksportuan (CSV)');
+      notify(T[currentLang].notifExport);
     }
     function copyExp() {
       const txt = document.getElementById('expBox').textContent;
-      if (!navigator.clipboard) { notify('⚠ Clipboard nuk mbështetet'); return; }
-      navigator.clipboard.writeText(txt).then(() => notify('📋 Kopjuar në clipboard!'));
+      if (!navigator.clipboard) { notify(T[currentLang].notifClipboardErr); return; }
+      navigator.clipboard.writeText(txt).then(() => notify(T[currentLang].notifCopy));
     }
 
     // ── COLOR UTILS ───────────────────────────────────
